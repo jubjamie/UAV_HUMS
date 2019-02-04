@@ -1,6 +1,7 @@
-half_quad_grt_rtw/build_exception.mat
-slprj/sl_proj.tmw
-slprj/grt/half_quad/tmwinternal/minfo.mat
+modelStore/FYP-Cyclocopter-Controller/half_quad_grt_rtw/build_exception.mat
+modelStore/FYP-Cyclocopter-Controller/slprj/sl_proj.tmw
+modelStore/FYP-Cyclocopter-Controller/slprj/grt/half_quad/tmwinternal/minfo.mat
+modelStore/FYP-Cyclocopter-Controller/Data/
 *.m~
 # Python byte code
 *.pyc
