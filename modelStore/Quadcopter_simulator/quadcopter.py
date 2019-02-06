@@ -14,10 +14,10 @@ class Propeller():
         self.speed = 0 #RPM
         self.thrust = 0
 
-    def set_speed(self, speed):
+    def set_speed(self, speed, mid):
         self.speed = speed
         # From http://www.electricrcaircraftguy.com/2013/09/propeller-static-dynamic-thrust-equation.html
-        self.thrust = uav_lookup.lookup_rpm(self.speed,0)
+        self.thrust = uav_lookup.lookup_rpm(self.speed, mid, 0)
         if self.thrust_unit == 'Kg':
             self.thrust = self.thrust*0.101972
 
@@ -95,10 +95,10 @@ class Quadcopter():
             self.quads[key]['state'][2] = max(0,self.quads[key]['state'][2])
 
     def set_motor_speeds(self,quad_name,speeds):
-        self.quads[quad_name]['m1'].set_speed(speeds[0])
-        self.quads[quad_name]['m2'].set_speed(speeds[1])
-        self.quads[quad_name]['m3'].set_speed(speeds[2])
-        self.quads[quad_name]['m4'].set_speed(speeds[3])
+        self.quads[quad_name]['m1'].set_speed(speeds[0],'m1')
+        self.quads[quad_name]['m2'].set_speed(speeds[1],'m2')
+        self.quads[quad_name]['m3'].set_speed(speeds[2],'m3')
+        self.quads[quad_name]['m4'].set_speed(speeds[3],'m4')
 
     def get_position(self,quad_name):
         return self.quads[quad_name]['state'][0:3]
