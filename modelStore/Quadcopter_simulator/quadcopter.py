@@ -4,6 +4,7 @@ import scipy.integrate
 import time
 import datetime
 import threading
+import uav_lookup
 
 class Propeller():
     def __init__(self, prop_dia, prop_pitch, thrust_unit='N'):
