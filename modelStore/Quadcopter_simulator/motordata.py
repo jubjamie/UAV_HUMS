@@ -27,3 +27,5 @@ motorFailure1 = np.array(
      [25810, 690],
      [26050, 724],
      [26170, 741]])
+
+alldata={'healthy':healthy, 'mf1': motorFailure1}
