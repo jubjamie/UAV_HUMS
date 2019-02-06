@@ -16,7 +16,7 @@ def Single_Point2Point():
     # Define the quadcopters
     QUADCOPTER={'q1':{'position':[1,0,4],'orientation':[0,0,0],'L':0.3,'r':0.1,'prop_size':[10,4.5],'weight':1.2}}
     # Controller parameters
-    CONTROLLER_PARAMETERS = {'Motor_limits':[4000,9000],
+    CONTROLLER_PARAMETERS = {'Motor_limits':[7000,27000],
                         'Tilt_limits':[-10,10],
                         'Yaw_Control_Limits':[-900,900],
                         'Z_XY_offset':500,
