@@ -1,7 +1,7 @@
 import numpy as np
 import motordata
 
-modelist=['healthy', 'mf1']
+modelist=['healthy', 'mf1', 'mf2']
 
 # Lookup system for failed components
 
@@ -14,6 +14,9 @@ def lookup_rpm(rpm, mid, mode='healthy'):
     :param mid: The motor id for choosing correct profile at later stage
     :return: return thrust in N
     """
+    if mid == 'm1':
+        mode = 1
+
     mode = parsemode(mode)
     newthrust_g = np.interp(rpm, motordata.alldata[mode][:, 0], motordata.alldata[mode][:, 1])
     newthrust_n = newthrust_g * 9.81 / 1000

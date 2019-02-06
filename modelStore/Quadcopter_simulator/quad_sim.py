@@ -17,7 +17,7 @@ def Single_Point2Point():
     QUADCOPTER={'q1':{'position':[1,0,4],'orientation':[0,0,0],'L':0.3,'r':0.1,'prop_size':[10,4.5],'weight':1.2}}
     # Controller parameters
     CONTROLLER_PARAMETERS = {'Motor_limits':[7000,27000],
-                        'Tilt_limits':[-10,10],
+                        'Tilt_limits':[-30,30],
                         'Yaw_Control_Limits':[-900,900],
                         'Z_XY_offset':500,
                         'Linear_PID':{'P':[300,300,7000],'I':[0.04,0.04,4.5],'D':[450,450,5000]},
