@@ -44,7 +44,7 @@ def Single_Point2Point():
         ctrl.update_yaw_target(y)
         for i in range(100):
             # print(i)
-            print((quad.get_time() - inittime).total_seconds())
+            # print((quad.get_time() - inittime).total_seconds())
             gui_object.quads['q1']['position'] = quad.get_position('q1')
             gui_object.quads['q1']['orientation'] = quad.get_orientation('q1')
             gui_object.update()
