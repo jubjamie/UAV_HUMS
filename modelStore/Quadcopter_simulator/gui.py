@@ -21,6 +21,15 @@ class GUI():
         self.goal_plot(goals)
         self.fig.canvas.mpl_connect('key_press_event', self.keypress_routine)
 
+        # Thrust monitoring
+        self.thrust_fig, self.thrust_ax = plt.subplots()
+        self.thrust_mids = [1,2,3,4]
+        self.thrust_values = [0, 0, 0, 0]
+        self.thrust_ax.set_ylim(0,13)
+        self.thrust_ypos = np.arange(len(self.thrust_mids))
+        self.thrust_ax.set_xlabel('Thrust')
+        self.thrust_ax.bar(self.thrust_mids, self.thrust_values)
+
     def rotation_matrix(self,angles):
         ct = math.cos(angles[0])
         cp = math.cos(angles[1])
@@ -39,6 +48,14 @@ class GUI():
             self.quads[key]['l1'], = self.ax.plot([],[],[],color='blue',linewidth=3,antialiased=False)
             self.quads[key]['l2'], = self.ax.plot([],[],[],color='red',linewidth=3,antialiased=False)
             self.quads[key]['hub'], = self.ax.plot([],[],[],marker='o',color='green', markersize=6,antialiased=False)
+
+    def thrust_plot(self, thrust_values_in):
+        self.thrust_ax.clear()
+        self.thrust_mids = [1, 2, 3, 4]
+        self.thrust_values = [0, 0, 0, 0]
+        self.thrust_ax.set_ylim(0, 13)
+        self.thrust_ax.set_xlabel('Thrust')
+        self.thrust_ax.bar(self.thrust_mids, thrust_values_in)
 
     def goal_plot(self, goals):
         for goal in goals:
@@ -59,6 +76,13 @@ class GUI():
             self.quads[key]['l2'].set_3d_properties(points[2,2:4])
             self.quads[key]['hub'].set_data(points[0,5],points[1,5])
             self.quads[key]['hub'].set_3d_properties(points[2,5])
+
+            # Update thrust graph
+            self.thrust_values[0] = self.quads[key]['m1'].thrust
+            self.thrust_values[1] = self.quads[key]['m2'].thrust
+            self.thrust_values[2] = self.quads[key]['m3'].thrust
+            self.thrust_values[3] = self.quads[key]['m4'].thrust
+            self.thrust_plot(self.thrust_values)
         plt.pause(0.000000000000001)
 
     def keypress_routine(self,event):
