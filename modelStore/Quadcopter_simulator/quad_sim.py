@@ -35,17 +35,20 @@ def Single_Point2Point():
     # Start the threads
     quad.start_thread(dt=QUAD_DYNAMICS_UPDATE,time_scaling=TIME_SCALING)
     ctrl.start_thread(update_rate=CONTROLLER_DYNAMICS_UPDATE,time_scaling=TIME_SCALING)
-    # Update the GUI while switching between destination poitions
-    while(run==True):
-        for goal,y in zip(GOALS,YAWS):
-            print(goal)
-            ctrl.update_target(goal)
-            ctrl.update_yaw_target(y)
-            for i in range(100):
-                print(i)
-                gui_object.quads['q1']['position'] = quad.get_position('q1')
-                gui_object.quads['q1']['orientation'] = quad.get_orientation('q1')
-                gui_object.update()
+    # Update the GUI while switching between destination positions
+    print('Starting goals')
+    inittime = quad.get_time()
+    for goal, y in zip(GOALS,YAWS):
+        print(['Goal: ' + str(goal)])
+        ctrl.update_target(goal)
+        ctrl.update_yaw_target(y)
+        for i in range(100):
+            # print(i)
+            print((quad.get_time() - inittime).total_seconds())
+            gui_object.quads['q1']['position'] = quad.get_position('q1')
+            gui_object.quads['q1']['orientation'] = quad.get_orientation('q1')
+            gui_object.update()
+    print('Goals complete.\nStopping threads')
     quad.stop_thread()
     ctrl.stop_thread()
 
