@@ -29,10 +29,15 @@ motorFailure1 = np.array(
      [26050, 724],
      [26170, 741]])
 
-alldata = {'healthy':healthy, 'mf1': motorFailure1}
+alldata = {'healthy': healthy, 'mf1': motorFailure1}
 
 
 def plotprofile(mode):
+    """
+    Given mode key for all data, plot a graph showing rpm profile. Useful for debug or quick inspection
+    :param mode: Mode key from alldata above
+    :return: Graph
+    """
     plt.figure()
     plt.plot(alldata[mode][:, 0], alldata[mode][:, 1])
     plt.xlabel('RPM')

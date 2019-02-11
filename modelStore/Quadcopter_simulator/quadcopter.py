@@ -6,6 +6,7 @@ import datetime
 import threading
 import uav_lookup
 
+
 class Propeller():
     def __init__(self, prop_dia, prop_pitch, thrust_unit='N'):
         self.dia = prop_dia
@@ -15,11 +16,18 @@ class Propeller():
         self.thrust = 0
 
     def set_speed(self, speed, mid):
+        """
+        Use RPM/Thrust data to give thrust for the motor from motordata file. Sets thrust of prop.
+        :param speed: Requested rpm from controller
+        :param mid: Motor ID for fault recall
+        :return: Method.
+        """
         self.speed = speed
-        # From http://www.electricrcaircraftguy.com/2013/09/propeller-static-dynamic-thrust-equation.html
+
         self.thrust = uav_lookup.lookup_rpm(self.speed, mid, 0)
         if self.thrust_unit == 'Kg':
             self.thrust = self.thrust*0.101972
+
 
 class Quadcopter():
     # State space representation: [x y z x_dot y_dot z_dot theta phi gamma theta_dot phi_dot gamma_dot]
@@ -29,7 +37,7 @@ class Quadcopter():
         self.g = gravity
         self.b = b
         self.thread_object = None
-        self.ode =  scipy.integrate.ode(self.state_dot).set_integrator('vode',nsteps=500,method='bdf')
+        self.ode = scipy.integrate.ode(self.state_dot).set_integrator('vode',nsteps=500,method='bdf')
         self.time = datetime.datetime.now()
         for key in self.quads:
             self.quads[key]['state'] = np.zeros(12)
