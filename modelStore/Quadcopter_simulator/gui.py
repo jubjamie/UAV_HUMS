@@ -6,7 +6,7 @@ import sys
 
 class GUI():
     # 'quad_list' is a dictionary of format: quad_list = {'quad_1_name':{'position':quad_1_position,'orientation':quad_1_orientation,'arm_span':quad_1_arm_span}, ...}
-    def __init__(self, quads):
+    def __init__(self, quads,goals):
         self.quads = quads
         self.fig = plt.figure()
         self.ax = Axes3D.Axes3D(self.fig)
@@ -18,6 +18,7 @@ class GUI():
         self.ax.set_zlabel('Z')
         self.ax.set_title('Quadcopter Simulation')
         self.init_plot()
+        self.goal_plot(goals)
         self.fig.canvas.mpl_connect('key_press_event', self.keypress_routine)
 
     def rotation_matrix(self,angles):
@@ -38,6 +39,10 @@ class GUI():
             self.quads[key]['l1'], = self.ax.plot([],[],[],color='blue',linewidth=3,antialiased=False)
             self.quads[key]['l2'], = self.ax.plot([],[],[],color='red',linewidth=3,antialiased=False)
             self.quads[key]['hub'], = self.ax.plot([],[],[],marker='o',color='green', markersize=6,antialiased=False)
+
+    def goal_plot(self, goals):
+        for goal in goals:
+            self.ax.plot([goal[0]], [goal[1]], [goal[2]], marker='o', color='black', markersize=3, antialiased=False)
 
     def update(self):
         for key in self.quads:
