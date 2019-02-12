@@ -15,7 +15,7 @@ class Propeller():
         self.speed = 0 #RPM
         self.thrust = 0
 
-    def set_speed(self, speed, mid):
+    def set_speed(self, speed, mid, motor_mode):
         """
         Use RPM/Thrust data to give thrust for the motor from motordata file. Sets thrust of prop.
         :param speed: Requested rpm from controller
@@ -24,7 +24,7 @@ class Propeller():
         """
         self.speed = speed
 
-        self.thrust = uav_lookup.lookup_rpm(self.speed, mid, 0)
+        self.thrust = uav_lookup.lookup_rpm(self.speed, mid, motor_mode)
         if self.thrust_unit == 'Kg':
             self.thrust = self.thrust*0.101972
 
@@ -32,8 +32,9 @@ class Propeller():
 class Quadcopter():
     # State space representation: [x y z x_dot y_dot z_dot theta phi gamma theta_dot phi_dot gamma_dot]
     # From Quadcopter Dynamics, Simulation, and Control by Andrew Gibiansky
-    def __init__(self,quads,gravity=9.81,b=0.0245):
+    def __init__(self,quads,motor_modes,gravity=9.81,b=0.0245):
         self.quads = quads
+        self.motor_modes = motor_modes
         self.g = gravity
         self.b = b
         self.thread_object = None
@@ -102,11 +103,11 @@ class Quadcopter():
             self.quads[key]['state'][6:9] = self.wrap_angle(self.quads[key]['state'][6:9])
             self.quads[key]['state'][2] = max(0,self.quads[key]['state'][2])
 
-    def set_motor_speeds(self,quad_name,speeds):
-        self.quads[quad_name]['m1'].set_speed(speeds[0],'m1')
-        self.quads[quad_name]['m2'].set_speed(speeds[1],'m2')
-        self.quads[quad_name]['m3'].set_speed(speeds[2],'m3')
-        self.quads[quad_name]['m4'].set_speed(speeds[3],'m4')
+    def set_motor_speeds(self, quad_name, speeds):
+        self.quads[quad_name]['m1'].set_speed(speeds[0], 'm1', self.motor_modes[0])
+        self.quads[quad_name]['m2'].set_speed(speeds[1], 'm2', self.motor_modes[1])
+        self.quads[quad_name]['m3'].set_speed(speeds[2], 'm3', self.motor_modes[2])
+        self.quads[quad_name]['m4'].set_speed(speeds[3], 'm4', self.motor_modes[3])
 
     def get_position(self,quad_name):
         return self.quads[quad_name]['state'][0:3]

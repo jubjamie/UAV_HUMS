@@ -6,7 +6,7 @@ import sys
 
 class GUI():
     # 'quad_list' is a dictionary of format: quad_list = {'quad_1_name':{'position':quad_1_position,'orientation':quad_1_orientation,'arm_span':quad_1_arm_span}, ...}
-    def __init__(self, quads,goals):
+    def __init__(self, quads, goals, motor_modes):
         self.quads = quads
         self.fig = plt.figure()
         self.ax = Axes3D.Axes3D(self.fig)
@@ -22,6 +22,10 @@ class GUI():
         self.fig.canvas.mpl_connect('key_press_event', self.keypress_routine)
 
         # Thrust monitoring
+        self.motor_modes = motor_modes
+        self.c_bank = ['blue', 'blue', 'blue', 'blue']
+        for mid, m in enumerate(self.motor_modes):
+            self.c_bank[mid]='blue' if m == 'healthy' else 'red'
         self.thrust_fig, self.thrust_ax = plt.subplots()
         self.thrust_mids = [1,2,3,4]
         self.thrust_values = [0, 0, 0, 0]
@@ -55,7 +59,7 @@ class GUI():
         self.thrust_values = [0, 0, 0, 0]
         self.thrust_ax.set_ylim(0, 13)
         self.thrust_ax.set_xlabel('Thrust')
-        self.thrust_ax.bar(self.thrust_mids, thrust_values_in)
+        self.thrust_ax.bar(self.thrust_mids, thrust_values_in, color=self.c_bank)
 
     def goal_plot(self, goals):
         for goal in goals:

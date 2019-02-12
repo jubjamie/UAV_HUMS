@@ -35,9 +35,9 @@ class Sim:
             self.CONTROLLER_PARAMETERS = ctlprms
         print('Basic Parameters Set')
 
-    def set_failure_mode(self, setting, mode='healthy'):
+    def set_failure_mode(self, setting='defined', mode='healthy'):
         if setting == 'random':
-            pass # Do random setting here
+            pass  # Do random setting here
         elif setting == 'defined':
             if len(mode) == 1:
                 if mode in uav_lookup.modelist:

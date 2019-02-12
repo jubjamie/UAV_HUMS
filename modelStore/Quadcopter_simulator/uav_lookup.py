@@ -1,7 +1,7 @@
 import numpy as np
 import modelStore.Quadcopter_simulator.motordata as motordata
 
-modelist=['healthy', 'mf1']
+modelist = list(motordata.alldata.keys())
 
 # Lookup system for failed components
 

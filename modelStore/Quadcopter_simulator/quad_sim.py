@@ -10,12 +10,12 @@ CONTROLLER_DYNAMICS_UPDATE = 0.005 # seconds
 run = True
 
 
-def Single_Point2Point(GOALS,YAWS,QUADCOPTER,CONTROLLER_PARAMETERS):
+def Single_Point2Point(GOALS,YAWS,QUADCOPTER,CONTROLLER_PARAMETERS,motor_modes):
     # Catch Ctrl+C to stop threads
     signal.signal(signal.SIGINT, signal_handler)
     # Make objects for quadcopter, gui and controller
-    quad = quadcopter.Quadcopter(QUADCOPTER)
-    gui_object = gui.GUI(quads=QUADCOPTER, goals=GOALS)
+    quad = quadcopter.Quadcopter(QUADCOPTER,motor_modes)
+    gui_object = gui.GUI(quads=QUADCOPTER, goals=GOALS, motor_modes=motor_modes)
     ctrl = controller.Controller_PID_Point2Point(quad.get_state,quad.get_time,quad.set_motor_speeds,params=CONTROLLER_PARAMETERS,quad_identifier='q1')
     # Start the threads
     quad.start_thread(dt=QUAD_DYNAMICS_UPDATE,time_scaling=TIME_SCALING)
