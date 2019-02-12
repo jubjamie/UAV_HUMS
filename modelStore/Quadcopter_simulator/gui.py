@@ -70,7 +70,7 @@ class GUI():
         self.thrust_rpm_ax.clear()
         self.thrust_rpm_ax.set_ylim(0, 30000)
         self.thrust_rpm_ax.set_xlabel('Requested RPMs')
-        self.thrust_rpm_ax.bar(self.thrust_mids, rpm_values_in)
+        self.thrust_rpm_ax.bar(self.thrust_mids, rpm_values_in, color=self.c_bank)
 
     def goal_plot(self, goals):
         for goal in goals:
