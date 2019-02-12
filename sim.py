@@ -1,5 +1,6 @@
 import modelStore.Quadcopter_simulator.uav_lookup as uav_lookup
 import modelStore.Quadcopter_simulator.quad_sim as quad_sim
+import random
 
 
 class Sim:
@@ -22,7 +23,7 @@ class Sim:
                                       'Angular_PID': {'P': [22000, 22000, 1500], 'I': [0, 0, 1.2],
                                                       'D': [12000, 12000, 0]},
                                       }
-        self.motor_modes = [0, 0, 0, 0]
+        self.motor_modes = ['healthy', 'healthy', 'healthy', 'healthy']
 
     def set_params(self, goals=None, yaws=None, quadcopter=None, ctlprms=None):
         if goals is not None:
@@ -37,7 +38,10 @@ class Sim:
 
     def set_failure_mode(self, setting='defined', mode='healthy'):
         if setting == 'random':
-            pass  # Do random setting here
+            self.motor_modes = [random.choices(uav_lookup.modelist, weights=[70, 30])[0],
+                                random.choices(uav_lookup.modelist, weights=[70, 30])[0],
+                                random.choices(uav_lookup.modelist, weights=[70, 30])[0],
+                                random.choices(uav_lookup.modelist, weights=[70, 30])[0]]
         elif setting == 'defined':
             if len(mode) == 1:
                 if mode in uav_lookup.modelist:
