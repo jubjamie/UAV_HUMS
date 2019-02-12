@@ -22,13 +22,20 @@ class GUI():
         self.fig.canvas.mpl_connect('key_press_event', self.keypress_routine)
 
         # Thrust monitoring
-        self.thrust_fig, self.thrust_ax = plt.subplots()
+        self.thrust_fig, self.thrust_axs = plt.subplots(ncols=1, nrows=2)
+        self.thrust_ax = self.thrust_axs[0]
         self.thrust_mids = [1,2,3,4]
         self.thrust_values = [0, 0, 0, 0]
         self.thrust_ax.set_ylim(0,13)
         self.thrust_ypos = np.arange(len(self.thrust_mids))
         self.thrust_ax.set_xlabel('Thrust')
         self.thrust_ax.bar(self.thrust_mids, self.thrust_values)
+
+        self.thrust_rpm_ax = self.thrust_axs[1]
+        self.rpm_values = [0, 0, 0, 0]
+        self.thrust_rpm_ax.set_ylim(0, 30000)
+        self.thrust_rpm_ax.set_xlabel('Requested RPMs')
+        self.thrust_ax.bar(self.thrust_mids, self.rpm_values)
 
     def rotation_matrix(self,angles):
         ct = math.cos(angles[0])
@@ -49,13 +56,17 @@ class GUI():
             self.quads[key]['l2'], = self.ax.plot([],[],[],color='red',linewidth=3,antialiased=False)
             self.quads[key]['hub'], = self.ax.plot([],[],[],marker='o',color='green', markersize=6,antialiased=False)
 
-    def thrust_plot(self, thrust_values_in):
+    def thrust_plot(self, thrust_values_in, rpm_values_in):
         self.thrust_ax.clear()
         self.thrust_mids = [1, 2, 3, 4]
-        self.thrust_values = [0, 0, 0, 0]
         self.thrust_ax.set_ylim(0, 13)
         self.thrust_ax.set_xlabel('Thrust')
         self.thrust_ax.bar(self.thrust_mids, thrust_values_in)
+
+        self.thrust_rpm_ax.clear()
+        self.thrust_rpm_ax.set_ylim(0, 30000)
+        self.thrust_rpm_ax.set_xlabel('Requested RPMs')
+        self.thrust_rpm_ax.bar(self.thrust_mids, rpm_values_in)
 
     def goal_plot(self, goals):
         for goal in goals:
@@ -82,7 +93,12 @@ class GUI():
             self.thrust_values[1] = self.quads[key]['m2'].thrust
             self.thrust_values[2] = self.quads[key]['m3'].thrust
             self.thrust_values[3] = self.quads[key]['m4'].thrust
-            self.thrust_plot(self.thrust_values)
+            # rpm values
+            self.rpm_values[0] = self.quads[key]['m1'].speed
+            self.rpm_values[1] = self.quads[key]['m2'].speed
+            self.rpm_values[2] = self.quads[key]['m3'].speed
+            self.rpm_values[3] = self.quads[key]['m4'].speed
+            self.thrust_plot(self.thrust_values, self.rpm_values)
         plt.pause(0.000000000000001)
 
     def keypress_routine(self,event):
