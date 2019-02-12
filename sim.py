@@ -51,4 +51,4 @@ class Sim:
         print('Set motor modes to: ' + str(self.motor_modes))
 
     def run_sim(self):
-        quad_sim.Single_Point2Point(self.GOALS, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS)
+        quad_sim.Single_Point2Point(self.GOALS, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes)
