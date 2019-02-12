@@ -1,5 +1,5 @@
 import numpy as np
-import motordata
+import modelStore.Quadcopter_simulator.motordata as motordata
 
 modelist=['healthy', 'mf1']
 
