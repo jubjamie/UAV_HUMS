@@ -1,4 +1,4 @@
-import quadcopter,gui,controller
+from modelStore.Quadcopter_simulator import quadcopter, gui, controller
 import signal
 import sys
 import argparse

@@ -4,7 +4,7 @@ import scipy.integrate
 import time
 import datetime
 import threading
-import uav_lookup
+from modelStore.Quadcopter_simulator import uav_lookup
 
 
 class Propeller():
