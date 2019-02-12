@@ -6,7 +6,8 @@ import sys
 
 class GUI():
     # 'quad_list' is a dictionary of format: quad_list = {'quad_1_name':{'position':quad_1_position,'orientation':quad_1_orientation,'arm_span':quad_1_arm_span}, ...}
-    def __init__(self, quads, goals, motor_modes):
+    def __init__(self, gui_mode, quads, goals, motor_modes):
+        self.gui_mode = gui_mode
         self.quads = quads
         self.fig = plt.figure()
         self.ax = Axes3D.Axes3D(self.fig)
@@ -26,20 +27,21 @@ class GUI():
         self.c_bank = ['blue', 'blue', 'blue', 'blue']
         for mid, m in enumerate(self.motor_modes):
             self.c_bank[mid]='blue' if m == 'healthy' else 'red'
-        self.thrust_fig, self.thrust_axs = plt.subplots(ncols=1, nrows=2)
-        self.thrust_ax = self.thrust_axs[0]
-        self.thrust_mids = [1,2,3,4]
-        self.thrust_values = [0, 0, 0, 0]
-        self.thrust_ax.set_ylim(0,13)
-        self.thrust_ypos = np.arange(len(self.thrust_mids))
-        self.thrust_ax.set_xlabel('Thrust')
-        self.thrust_ax.bar(self.thrust_mids, self.thrust_values)
+        if self.gui_mode is 2:
+            self.thrust_fig, self.thrust_axs = plt.subplots(ncols=1, nrows=2)
+            self.thrust_ax = self.thrust_axs[0]
+            self.thrust_mids = [1,2,3,4]
+            self.thrust_values = [0, 0, 0, 0]
+            self.thrust_ax.set_ylim(0,13)
+            self.thrust_ypos = np.arange(len(self.thrust_mids))
+            self.thrust_ax.set_xlabel('Thrust')
+            self.thrust_ax.bar(self.thrust_mids, self.thrust_values)
 
-        self.thrust_rpm_ax = self.thrust_axs[1]
-        self.rpm_values = [0, 0, 0, 0]
-        self.thrust_rpm_ax.set_ylim(0, 30000)
-        self.thrust_rpm_ax.set_xlabel('Requested RPMs')
-        self.thrust_ax.bar(self.thrust_mids, self.rpm_values)
+            self.thrust_rpm_ax = self.thrust_axs[1]
+            self.rpm_values = [0, 0, 0, 0]
+            self.thrust_rpm_ax.set_ylim(0, 30000)
+            self.thrust_rpm_ax.set_xlabel('Requested RPMs')
+            self.thrust_ax.bar(self.thrust_mids, self.rpm_values)
 
     def rotation_matrix(self,angles):
         ct = math.cos(angles[0])
@@ -92,17 +94,18 @@ class GUI():
             self.quads[key]['hub'].set_data(points[0,5],points[1,5])
             self.quads[key]['hub'].set_3d_properties(points[2,5])
 
-            # Update thrust graph
-            self.thrust_values[0] = self.quads[key]['m1'].thrust
-            self.thrust_values[1] = self.quads[key]['m2'].thrust
-            self.thrust_values[2] = self.quads[key]['m3'].thrust
-            self.thrust_values[3] = self.quads[key]['m4'].thrust
-            # rpm values
-            self.rpm_values[0] = self.quads[key]['m1'].speed
-            self.rpm_values[1] = self.quads[key]['m2'].speed
-            self.rpm_values[2] = self.quads[key]['m3'].speed
-            self.rpm_values[3] = self.quads[key]['m4'].speed
-            self.thrust_plot(self.thrust_values, self.rpm_values)
+            if self.gui_mode is 2:
+                # Update thrust graph
+                self.thrust_values[0] = self.quads[key]['m1'].thrust
+                self.thrust_values[1] = self.quads[key]['m2'].thrust
+                self.thrust_values[2] = self.quads[key]['m3'].thrust
+                self.thrust_values[3] = self.quads[key]['m4'].thrust
+                # rpm values
+                self.rpm_values[0] = self.quads[key]['m1'].speed
+                self.rpm_values[1] = self.quads[key]['m2'].speed
+                self.rpm_values[2] = self.quads[key]['m3'].speed
+                self.rpm_values[3] = self.quads[key]['m4'].speed
+                self.thrust_plot(self.thrust_values, self.rpm_values)
         plt.pause(0.000000000000001)
 
     def keypress_routine(self,event):

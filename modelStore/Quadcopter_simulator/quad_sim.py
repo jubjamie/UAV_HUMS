@@ -10,12 +10,14 @@ CONTROLLER_DYNAMICS_UPDATE = 0.005 # seconds
 run = True
 
 
-def Single_Point2Point(GOALS,YAWS,QUADCOPTER,CONTROLLER_PARAMETERS,motor_modes):
+def Single_Point2Point(GOALS,YAWS,QUADCOPTER,CONTROLLER_PARAMETERS,motor_modes, gui_mode):
     # Catch Ctrl+C to stop threads
+    gui_object = []
     signal.signal(signal.SIGINT, signal_handler)
     # Make objects for quadcopter, gui and controller
     quad = quadcopter.Quadcopter(QUADCOPTER,motor_modes)
-    gui_object = gui.GUI(quads=QUADCOPTER, goals=GOALS, motor_modes=motor_modes)
+    if gui_mode is not 0:
+        gui_object = gui.GUI(gui_mode=gui_mode, quads=QUADCOPTER, goals=GOALS, motor_modes=motor_modes)
     ctrl = controller.Controller_PID_Point2Point(quad.get_state,quad.get_time,quad.set_motor_speeds,params=CONTROLLER_PARAMETERS,quad_identifier='q1')
     # Start the threads
     quad.start_thread(dt=QUAD_DYNAMICS_UPDATE,time_scaling=TIME_SCALING)
@@ -30,9 +32,10 @@ def Single_Point2Point(GOALS,YAWS,QUADCOPTER,CONTROLLER_PARAMETERS,motor_modes):
         for i in range(100):
             # print(i)
             # print((quad.get_time() - inittime).total_seconds())
-            gui_object.quads['q1']['position'] = quad.get_position('q1')
-            gui_object.quads['q1']['orientation'] = quad.get_orientation('q1')
-            gui_object.update()
+            if gui_mode is not 0:
+                gui_object.quads['q1']['position'] = quad.get_position('q1')
+                gui_object.quads['q1']['orientation'] = quad.get_orientation('q1')
+                gui_object.update()
     print('Goals complete.\nStopping threads')
     quad.stop_thread()
     ctrl.stop_thread()

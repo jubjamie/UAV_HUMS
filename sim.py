@@ -24,6 +24,9 @@ class Sim:
                                                       'D': [12000, 12000, 0]},
                                       }
         self.motor_modes = ['healthy', 'healthy', 'healthy', 'healthy']
+        self.gui_mode = 1
+        self.see_motor_gui = False
+        self.see_gui = True
 
     def set_params(self, goals=None, yaws=None, quadcopter=None, ctlprms=None):
         if goals is not None:
@@ -55,4 +58,12 @@ class Sim:
         print('Set motor modes to: ' + str(self.motor_modes))
 
     def run_sim(self):
-        quad_sim.Single_Point2Point(self.GOALS, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes)
+        # Parse gui visibility logic
+        if self.see_gui is True and self.see_motor_gui is True:
+            self.gui_mode = 2
+        elif self.see_gui is True and self.see_motor_gui is False:
+            self.gui_mode = 1
+        else:
+            self.gui_mode = 0
+
+        quad_sim.Single_Point2Point(self.GOALS, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes, self.gui_mode)
