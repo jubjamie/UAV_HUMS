@@ -2,6 +2,7 @@ import numpy as np
 import math
 import time
 import threading
+import pandas as pd
 
 class Controller_PID_Point2Point():
     def __init__(self, get_state, get_time, actuate_motors, params, quad_identifier):
@@ -31,6 +32,15 @@ class Controller_PID_Point2Point():
         self.target = [0,0,0]
         self.yaw_target = 0.0
         self.run = True
+
+        #  Data Logging bits
+        self.save_buffer = []
+        self.buffer_counter = 0
+        self.step_ignore = 1
+
+        ts = time.gmtime()
+        self.init_timestamp = time.strftime("%Y_%m_%d--%H-%M-%S", ts)
+        self.save_path = 'databin/test1/' + self.init_timestamp + '.csv'
 
     def wrap_angle(self,val):
         return( ( val + np.pi) % (2 * np.pi ) - np.pi )
@@ -67,7 +77,46 @@ class Controller_PID_Point2Point():
         m3 = throttle - x_val + z_val
         m4 = throttle - y_val - z_val
         M = np.clip([m1,m2,m3,m4],self.MOTOR_LIMITS[0],self.MOTOR_LIMITS[1])
+
+        # Collate Data for logging
+        errors = np.array([x_error, y_error, z_error, theta_error, phi_error, gamma_dot_error])
+        in_state = np.array([x, y, z, x_dot, y_dot, z_dot, theta, phi, gamma, theta_dot, phi_dot, gamma_dot])
+        requests = np.array([m1, m2, m3, m4])
+        save_data_cat = np.concatenate((in_state, errors, requests))
+        names = ['x', 'y', 'z', 'x_dot', 'y_dot', 'z_dot', 'theta', 'phi', 'gamma', 'theta_dot', 'phi_dot', 'gamma_dot',
+                 'x_error', 'y_error', 'z_error', 'theta_error', 'phi_error', 'gamma_dot_error', 'm1_r', 'm2_r', 'm3_r',
+                 'm4_r']
+        self.save_data(save_data_cat, names)
+        # Actuate the motors
         self.actuate_motors(self.quad_identifier,M)
+
+    def save_data(self, data, col_names):
+        if self.step_ignore < 10:
+            # Skip
+            self.step_ignore += 1
+        else:
+            # Save to buffer
+            self.step_ignore = 1
+            if self.buffer_counter == 0:
+                # New buffer
+                self.save_buffer = pd.DataFrame([data], columns=col_names)
+                self.buffer_counter += 1
+                print('New buffer')
+            elif self.buffer_counter < 10:
+                #  Append to buffer
+                local_data_df = pd.DataFrame([data], columns=col_names)
+                self.save_buffer = self.save_buffer.append(local_data_df, ignore_index=True)
+                self.buffer_counter += 1
+                print('Writing to buffer. Length: ' + str(len(self.save_buffer.index)))
+                #print(self.save_buffer)
+            elif self.buffer_counter >= 10:
+                #  Append buffer to file
+                self.save_buffer.to_csv(self.save_path, index=False, header=False, mode='a')
+                self.buffer_counter = 0
+                print('Writing to file')
+            else:
+                print('Buffer counter error, skipping. Count @ ' + str(self.buffer_counter))
+
 
     def update_target(self,target):
         self.target = target
