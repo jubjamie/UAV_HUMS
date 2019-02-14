@@ -1,4 +1,3 @@
-from analyse import getdatafile as gdf
 import pandas as pd
 import mpl_toolkits.mplot3d.axes3d as Axes3D
 import numpy as np
