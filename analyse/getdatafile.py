@@ -1,6 +1,8 @@
+# DEPRECATED #
 from tkinter import filedialog
 from tkinter import *
 
+raise DeprecationWarning('This file is no longer in use')
 
 def getpath():
     root = Tk()
