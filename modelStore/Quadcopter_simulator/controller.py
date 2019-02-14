@@ -37,6 +37,7 @@ class Controller_PID_Point2Point():
         self.save_buffer = []
         self.buffer_counter = 0
         self.step_ignore = 1
+        self.header_tracker = False
 
         ts = time.gmtime()
         self.init_timestamp = time.strftime("%Y_%m_%d--%H-%M-%S", ts)
@@ -108,10 +109,14 @@ class Controller_PID_Point2Point():
                 self.save_buffer = self.save_buffer.append(local_data_df, ignore_index=True)
                 self.buffer_counter += 1
                 print('Writing to buffer. Length: ' + str(len(self.save_buffer.index)))
-                #print(self.save_buffer)
+                #  print(self.save_buffer)
             elif self.buffer_counter >= 10:
                 #  Append buffer to file
-                self.save_buffer.to_csv(self.save_path, index=False, header=False, mode='a')
+                if self.header_tracker is False:
+                    self.save_buffer.to_csv(self.save_path, index=False, header=True, mode='a')
+                    self.header_tracker = True
+                else:
+                    self.save_buffer.to_csv(self.save_path, index=False, header=False, mode='a')
                 self.buffer_counter = 0
                 print('Writing to file')
             else:
