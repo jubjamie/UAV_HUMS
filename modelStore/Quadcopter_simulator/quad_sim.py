@@ -21,7 +21,7 @@ def Single_Point2Point(GOALS,YAWS,QUADCOPTER,CONTROLLER_PARAMETERS,motor_modes, 
     ctrl = controller.Controller_PID_Point2Point(quad.get_state,quad.get_time,quad.set_motor_speeds,params=CONTROLLER_PARAMETERS,quad_identifier='q1')
     # Start the threads
     quad.start_thread(dt=QUAD_DYNAMICS_UPDATE,time_scaling=TIME_SCALING)
-    ctrl.start_thread(update_rate=CONTROLLER_DYNAMICS_UPDATE,time_scaling=TIME_SCALING)
+    ctrl.start_thread(update_rate=CONTROLLER_DYNAMICS_UPDATE,time_scaling=TIME_SCALING, goal_length=5)
     # Update the GUI while switching between destination positions
     print('Starting goals')
     inittime = quad.get_time()
@@ -29,7 +29,8 @@ def Single_Point2Point(GOALS,YAWS,QUADCOPTER,CONTROLLER_PARAMETERS,motor_modes, 
         print(['Goal: ' + str(goal)])
         ctrl.update_target(goal)
         ctrl.update_yaw_target(y)
-        for i in range(100):
+        ctrl.ready_for_goal = False
+        while ctrl.ready_for_goal is False:
             # print(i)
             # print((quad.get_time() - inittime).total_seconds())
             if gui_mode is not 0:

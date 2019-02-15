@@ -4,6 +4,7 @@ import time
 import threading
 import pandas as pd
 
+
 class Controller_PID_Point2Point():
     def __init__(self, get_state, get_time, actuate_motors, params, quad_identifier):
         self.quad_identifier = quad_identifier
@@ -32,16 +33,23 @@ class Controller_PID_Point2Point():
         self.target = [0,0,0]
         self.yaw_target = 0.0
         self.run = True
+        self.time = 0
 
         #  Data Logging bits
         self.save_buffer = []
         self.buffer_counter = 0
         self.step_ignore = 1
+        self.step_ignore_limit = 10
+        self.buffer_size = 200
         self.header_tracker = False
 
         ts = time.gmtime()
         self.init_timestamp = time.strftime("%Y_%m_%d--%H-%M-%S", ts)
         self.save_path = 'databin/test1/' + self.init_timestamp + '.csv'
+
+        # Sim time
+        self.sim_clock = 0
+        self.ready_for_goal = False
 
     def wrap_angle(self,val):
         return( ( val + np.pi) % (2 * np.pi ) - np.pi )
@@ -85,8 +93,8 @@ class Controller_PID_Point2Point():
         location_dests = np.array([dest_x, dest_y, dest_z])
         angle_dests = np.array([dest_theta, dest_phi, dest_gamma])
         requests = np.array([m1, m2, m3, m4])
-        save_data_cat = np.concatenate((location_dests, in_state, errors, angle_dests, requests))
-        names = ['x_dest', 'y_dest', 'z_dest', 'x', 'y', 'z', 'x_dot', 'y_dot', 'z_dot', 'theta', 'phi', 'gamma', 'theta_dot', 'phi_dot', 'gamma_dot',
+        save_data_cat = np.concatenate((np.array([self.sim_clock]), location_dests, in_state, errors, angle_dests, requests))
+        names = ['sim_clock', 'x_dest', 'y_dest', 'z_dest', 'x', 'y', 'z', 'x_dot', 'y_dot', 'z_dot', 'theta', 'phi', 'gamma', 'theta_dot', 'phi_dot', 'gamma_dot',
                  'x_error', 'y_error', 'z_error', 'theta_error', 'phi_error', 'gamma_dot_error', 'dest_theta',
                  'dest_phi', 'dest_gamma', 'm1_r', 'm2_r', 'm3_r', 'm4_r']
         self.save_data(save_data_cat, names)
@@ -94,7 +102,7 @@ class Controller_PID_Point2Point():
         self.actuate_motors(self.quad_identifier, M)
 
     def save_data(self, data, col_names):
-        if self.step_ignore < 10:
+        if self.step_ignore < self.step_ignore_limit:
             # Skip
             self.step_ignore += 1
         else:
@@ -105,14 +113,14 @@ class Controller_PID_Point2Point():
                 self.save_buffer = pd.DataFrame([data], columns=col_names)
                 self.buffer_counter += 1
                 print('New buffer')
-            elif self.buffer_counter < 10:
+            elif self.buffer_counter < self.buffer_size:
                 #  Append to buffer
                 local_data_df = pd.DataFrame([data], columns=col_names)
                 self.save_buffer = self.save_buffer.append(local_data_df, ignore_index=True)
                 self.buffer_counter += 1
-                print('Writing to buffer. Length: ' + str(len(self.save_buffer.index)))
+                # print('Writing to buffer. Length: ' + str(len(self.save_buffer.index)))
                 #  print(self.save_buffer)
-            elif self.buffer_counter >= 10:
+            elif self.buffer_counter >= self.buffer_size:
                 #  Append buffer to file
                 if self.header_tracker is False:
                     self.save_buffer.to_csv(self.save_path, index=False, header=True, mode='a')
@@ -122,27 +130,34 @@ class Controller_PID_Point2Point():
                 self.buffer_counter = 0
                 print('Writing to file')
             else:
-                print('Buffer counter error, skipping. Count @ ' + str(self.buffer_counter))
+                # print('Buffer counter error, skipping. Count @ ' + str(self.buffer_counter))
+                pass
 
-
-    def update_target(self,target):
+    def update_target(self, target):
         self.target = target
 
     def update_yaw_target(self,target):
         self.yaw_target = self.wrap_angle(target)
 
-    def thread_run(self,update_rate,time_scaling):
-        update_rate = update_rate*time_scaling
+    def thread_run(self, dt, time_scaling, goal_length):
+        update_rate = dt*time_scaling
         last_update = self.get_time()
-        while(self.run==True):
+        while self.run is True:
             time.sleep(0)
             self.time = self.get_time()
             if (self.time - last_update).total_seconds() > update_rate:
                 self.update()
                 last_update = self.time
+                self.sim_clock += dt
+                self.sim_clock = round(self.sim_clock, 5)
+                # print(self.sim_clock)
+                if self.sim_clock % goal_length == 0:
+                    #  Flag new target
+                    self.ready_for_goal = True
+                    print('Target flagging')
 
-    def start_thread(self,update_rate=0.005,time_scaling=1):
-        self.thread_object = threading.Thread(target=self.thread_run,args=(update_rate,time_scaling))
+    def start_thread(self,update_rate=0.005,time_scaling=1, goal_length=5):
+        self.thread_object = threading.Thread(target=self.thread_run,args=(update_rate,time_scaling, goal_length))
         self.thread_object.start()
 
     def stop_thread(self):
