@@ -48,7 +48,7 @@ def plotangles():
     angleplot_fig.suptitle('Angle Scope')
 
     #  Calculate time axes
-    time_data = np.arange(0, step=0.005*10, stop=0.005*10*(angle_data_n[:, 0].shape[0]))
+    time_data = flight_df[['sim_clock']].to_numpy()[:, 0]
     angleplot_axs[0].plot(time_data, angle_data_n[:, 0])
     angleplot_axs[0].set_title('Theta - Roll')
     angleplot_axs[1].plot(time_data, angle_data_n[:, 1])
