@@ -38,13 +38,14 @@ class Controller_PID_Point2Point():
         #  Data Logging bits
         self.save_buffer = []
         self.buffer_counter = 0
-        self.step_ignore = 1
         self.step_ignore_limit = 10
+        self.step_ignore = self.step_ignore_limit
         self.buffer_size = 200
         self.header_tracker = False
 
-        ts = time.gmtime()
-        self.init_timestamp = time.strftime("%Y_%m_%d--%H-%M-%S", ts)
+        self.ts = time.gmtime()
+        self.ts_mt = time.mktime(self.ts)
+        self.init_timestamp = time.strftime("%Y_%m_%d--%H-%M-%S", self.ts)
         self.save_path = 'databin/test1/' + self.init_timestamp + '.csv'
 
         # Sim time
@@ -93,8 +94,10 @@ class Controller_PID_Point2Point():
         location_dests = np.array([dest_x, dest_y, dest_z])
         angle_dests = np.array([dest_theta, dest_phi, dest_gamma])
         requests = np.array([m1, m2, m3, m4])
-        save_data_cat = np.concatenate((np.array([self.sim_clock]), location_dests, in_state, errors, angle_dests, requests))
-        names = ['sim_clock', 'x_dest', 'y_dest', 'z_dest', 'x', 'y', 'z', 'x_dot', 'y_dot', 'z_dot', 'theta', 'phi', 'gamma', 'theta_dot', 'phi_dot', 'gamma_dot',
+        local_ts = time.mktime(time.gmtime())
+        wall_clock = (local_ts-self.ts_mt)
+        save_data_cat = np.concatenate((np.array([wall_clock, self.sim_clock]), location_dests, in_state, errors, angle_dests, requests))
+        names = ['wall_clock', 'sim_clock', 'x_dest', 'y_dest', 'z_dest', 'x', 'y', 'z', 'x_dot', 'y_dot', 'z_dot', 'theta', 'phi', 'gamma', 'theta_dot', 'phi_dot', 'gamma_dot',
                  'x_error', 'y_error', 'z_error', 'theta_error', 'phi_error', 'gamma_dot_error', 'dest_theta',
                  'dest_phi', 'dest_gamma', 'm1_r', 'm2_r', 'm3_r', 'm4_r']
         self.save_data(save_data_cat, names)
