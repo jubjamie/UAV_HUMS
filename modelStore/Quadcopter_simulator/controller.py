@@ -82,14 +82,16 @@ class Controller_PID_Point2Point():
         # Collate Data for logging
         errors = np.array([x_error, y_error, z_error, theta_error, phi_error, gamma_dot_error])
         in_state = np.array([x, y, z, x_dot, y_dot, z_dot, theta, phi, gamma, theta_dot, phi_dot, gamma_dot])
+        location_dests = np.array([dest_x, dest_y, dest_z])
+        angle_dests = np.array([dest_theta, dest_phi, dest_gamma])
         requests = np.array([m1, m2, m3, m4])
-        save_data_cat = np.concatenate((in_state, errors, requests))
-        names = ['x', 'y', 'z', 'x_dot', 'y_dot', 'z_dot', 'theta', 'phi', 'gamma', 'theta_dot', 'phi_dot', 'gamma_dot',
-                 'x_error', 'y_error', 'z_error', 'theta_error', 'phi_error', 'gamma_dot_error', 'm1_r', 'm2_r', 'm3_r',
-                 'm4_r']
+        save_data_cat = np.concatenate((location_dests, in_state, errors, angle_dests, requests))
+        names = ['x_dest', 'y_dest', 'z_dest', 'x', 'y', 'z', 'x_dot', 'y_dot', 'z_dot', 'theta', 'phi', 'gamma', 'theta_dot', 'phi_dot', 'gamma_dot',
+                 'x_error', 'y_error', 'z_error', 'theta_error', 'phi_error', 'gamma_dot_error', 'dest_theta',
+                 'dest_phi', 'dest_gamma', 'm1_r', 'm2_r', 'm3_r', 'm4_r']
         self.save_data(save_data_cat, names)
         # Actuate the motors
-        self.actuate_motors(self.quad_identifier,M)
+        self.actuate_motors(self.quad_identifier, M)
 
     def save_data(self, data, col_names):
         if self.step_ignore < 10:
