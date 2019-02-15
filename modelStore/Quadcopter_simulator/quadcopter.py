@@ -7,7 +7,7 @@ import threading
 from modelStore.Quadcopter_simulator import uav_lookup
 
 
-class Propeller():
+class Propeller:
     def __init__(self, prop_dia, prop_pitch, thrust_unit='N'):
         self.dia = prop_dia
         self.pitch = prop_pitch
@@ -18,6 +18,7 @@ class Propeller():
     def set_speed(self, speed, mid, motor_mode):
         """
         Use RPM/Thrust data to give thrust for the motor from motordata file. Sets thrust of prop.
+        :param motor_mode:
         :param speed: Requested rpm from controller
         :param mid: Motor ID for fault recall
         :return: Method.
@@ -29,7 +30,7 @@ class Propeller():
             self.thrust = self.thrust * 0.101972
 
 
-class Quadcopter():
+class Quadcopter:
     # State space representation: [x y z x_dot y_dot z_dot theta phi gamma theta_dot phi_dot gamma_dot]
     # From Quadcopter Dynamics, Simulation, and Control by Andrew Gibiansky
     def __init__(self, quads, motor_modes, gravity=9.81, b=0.0245):
@@ -72,9 +73,9 @@ class Quadcopter():
         return R
 
     def wrap_angle(self, val):
-        return ((val + np.pi) % (2 * np.pi) - np.pi)
+        return (val + np.pi) % (2 * np.pi) - np.pi
 
-    def state_dot(self, time, state, key):
+    def state_dot(self, time_a, state, key):
         state_dot = np.zeros(12)
         # The velocities(t+1 x_dots equal the t x_dots)
         state_dot[0] = self.quads[key]['state'][3]
