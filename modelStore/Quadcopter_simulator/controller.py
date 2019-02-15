@@ -133,6 +133,10 @@ class Controller_PID_Point2Point():
                 # print('Buffer counter error, skipping. Count @ ' + str(self.buffer_counter))
                 pass
 
+    def flush_buffer(self):
+        print('Flushing buffer to file')
+        self.save_buffer.to_csv(self.save_path, index=False, header=False, mode='a')
+
     def update_target(self, target):
         self.target = target
 
@@ -154,7 +158,7 @@ class Controller_PID_Point2Point():
                 if self.sim_clock % goal_length == 0:
                     #  Flag new target
                     self.ready_for_goal = True
-                    print('Target flagging')
+                    # print('Target flagging')
 
     def start_thread(self,update_rate=0.005,time_scaling=1, goal_length=5):
         self.thread_object = threading.Thread(target=self.thread_run,args=(update_rate,time_scaling, goal_length))

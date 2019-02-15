@@ -27,6 +27,7 @@ class Sim:
         self.gui_mode = 1
         self.see_motor_gui = False
         self.see_gui = True
+        self.time_scale = 1.0
 
     def set_params(self, goals=None, yaws=None, quadcopter=None, ctlprms=None):
         if goals is not None:
@@ -66,4 +67,4 @@ class Sim:
         else:
             self.gui_mode = 0
 
-        quad_sim.Single_Point2Point(self.GOALS, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes, self.gui_mode)
+        quad_sim.Single_Point2Point(self.GOALS, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes, self.gui_mode, self.time_scale)

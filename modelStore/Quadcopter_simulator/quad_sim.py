@@ -2,15 +2,16 @@ from modelStore.Quadcopter_simulator import quadcopter, gui, controller
 import signal
 import sys
 import argparse
+import time
 
 # Constants
-TIME_SCALING = 1.0 # Any positive number(Smaller is faster). 1.0->Real Time, 0.0->Run as fast as possible
+#  TIME_SCALING = 1.0 # Any positive number(Smaller is faster). 1.0->Real Time, 0.0->Run as fast as possible
 QUAD_DYNAMICS_UPDATE = 0.002 # seconds
 CONTROLLER_DYNAMICS_UPDATE = 0.005 # seconds
 run = True
 
 
-def Single_Point2Point(GOALS,YAWS,QUADCOPTER,CONTROLLER_PARAMETERS,motor_modes, gui_mode):
+def Single_Point2Point(GOALS,YAWS,QUADCOPTER,CONTROLLER_PARAMETERS,motor_modes, gui_mode, time_scale):
     # Catch Ctrl+C to stop threads
     gui_object = []
     signal.signal(signal.SIGINT, signal_handler)
@@ -20,8 +21,8 @@ def Single_Point2Point(GOALS,YAWS,QUADCOPTER,CONTROLLER_PARAMETERS,motor_modes, 
         gui_object = gui.GUI(gui_mode=gui_mode, quads=QUADCOPTER, goals=GOALS, motor_modes=motor_modes)
     ctrl = controller.Controller_PID_Point2Point(quad.get_state,quad.get_time,quad.set_motor_speeds,params=CONTROLLER_PARAMETERS,quad_identifier='q1')
     # Start the threads
-    quad.start_thread(dt=QUAD_DYNAMICS_UPDATE,time_scaling=TIME_SCALING)
-    ctrl.start_thread(update_rate=CONTROLLER_DYNAMICS_UPDATE,time_scaling=TIME_SCALING, goal_length=5)
+    quad.start_thread(dt=QUAD_DYNAMICS_UPDATE,time_scaling=time_scale)
+    ctrl.start_thread(update_rate=CONTROLLER_DYNAMICS_UPDATE,time_scaling=time_scale, goal_length=5)
     # Update the GUI while switching between destination positions
     print('Starting goals')
     inittime = quad.get_time()
@@ -31,12 +32,14 @@ def Single_Point2Point(GOALS,YAWS,QUADCOPTER,CONTROLLER_PARAMETERS,motor_modes, 
         ctrl.update_yaw_target(y)
         ctrl.ready_for_goal = False
         while ctrl.ready_for_goal is False:
+            time.sleep(CONTROLLER_DYNAMICS_UPDATE*0.95)
             # print(i)
             # print((quad.get_time() - inittime).total_seconds())
             if gui_mode is not 0:
                 gui_object.quads['q1']['position'] = quad.get_position('q1')
                 gui_object.quads['q1']['orientation'] = quad.get_orientation('q1')
                 gui_object.update()
+    ctrl.flush_buffer()
     print('Goals complete.\nStopping threads')
     quad.stop_thread()
     ctrl.stop_thread()
