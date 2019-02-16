@@ -103,7 +103,7 @@ class Controller_PID_Point2Point:
         wall_clock = (local_ts - self.ts_mt)
         save_data_cat = np.concatenate(
             (np.array([wall_clock, self.sim_clock]), location_dests, in_state, errors, angle_dests, requests))
-        names = ['wall_clock', 'sim_clock', 'x_dest', 'y_dest', 'z_dest', 'x', 'y', 'z', 'x_dot', 'y_dot', 'z_dot',
+        names = ['wall_clock', 'sim_clock', 'dest_x', 'dest_y', 'dest_z', 'x', 'y', 'z', 'x_dot', 'y_dot', 'z_dot',
                  'theta', 'phi', 'gamma', 'theta_dot', 'phi_dot', 'gamma_dot',
                  'x_error', 'y_error', 'z_error', 'theta_error', 'phi_error', 'gamma_dot_error', 'dest_theta',
                  'dest_phi', 'dest_gamma', 'm1_r', 'm2_r', 'm3_r', 'm4_r']
