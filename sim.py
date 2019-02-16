@@ -47,7 +47,7 @@ class Sim:
                                 random.choices(uav_lookup.modelist, weights=[70, 30])[0],
                                 random.choices(uav_lookup.modelist, weights=[70, 30])[0]]
         elif setting == 'defined':
-            if len(mode) == 1:
+            if type(mode) is not list:
                 if mode in uav_lookup.modelist:
                     self.motor_modes = [mode, mode, mode, mode]
                 else:
