@@ -30,6 +30,12 @@ def getfp():
     return {'pathdata': path_data_n, 'goaldata': fp_goals_n}
 
 
+def get_motor_modes():
+    motor_modes = flight_df[['m1_mode', 'm2_mode', 'm3_mode', 'm4_mode']].iloc[0]
+
+    return motor_modes
+
+
 def plotfp():
     fpdata = getfp()
     path_data_n = fpdata['pathdata']
@@ -52,7 +58,7 @@ def plotfptrace():
     fpplot_fig.suptitle('Location Scope')
 
     #  Calculate time axes
-    time_data = flight_df[['sim_clock']].to_numpy()[:, 0]
+    time_data = get_timedata()
     fpplot_axs[0].plot(time_data, path_data_n[:, 0])
     fpplot_axs[0].plot(time_data, path_data_n[:, 3], 'r--')
     fpplot_axs[0].set_title('x')
@@ -64,6 +70,10 @@ def plotfptrace():
     fpplot_axs[2].set_title('z - Alt')
 
     plt.show()
+
+
+def get_timedata():
+    return flight_df[['sim_clock']].to_numpy()[:, 0]
 
 
 def getangles():
@@ -79,7 +89,7 @@ def plotangles():
     angleplot_fig.suptitle('Angle Scope')
 
     #  Calculate time axes
-    time_data = flight_df[['sim_clock']].to_numpy()[:, 0]
+    time_data = get_timedata()
     angleplot_axs[0].plot(time_data, angle_data_n[:, 0])
     angleplot_axs[0].plot(time_data, angle_data_n[:, 3], 'r--')
     angleplot_axs[0].set_title('Theta - Roll')
@@ -99,6 +109,16 @@ def enda():
 
 
 """ Main stuff """
+motor_text = Text(root)
+motor_text.insert('end', 'Sim File Loaded\n\n')
+motor_text.insert('end', 'Sim RunTime in File: ')
+motor_text.insert('end', str(np.max(get_timedata())))
+motor_text.insert('end', ' seconds')
+motor_text.insert('end', '\n\nMotor Init Health Status Modes\n')
+motor_text.insert('end', str(get_motor_modes()))
+motor_text.insert('end', '\n\nGoals: \n')
+motor_text.insert('end', str(getfp()['goaldata']))
+motor_text.pack()
 b_exit = Button(root, text='Exit', command=enda)
 b_fp = Button(root, text='Plot Flight Path', command=plotfp)
 b_fpt = Button(root, text='Plot Flight Path Traces', command=plotfptrace)
