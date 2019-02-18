@@ -20,7 +20,7 @@ def Single_Point2Point(GOALS, YAWS, QUADCOPTER, CONTROLLER_PARAMETERS, motor_mod
     if gui_mode is not 0:
         gui_object = gui.GUI(gui_mode=gui_mode, quads=QUADCOPTER, goals=GOALS, motor_modes=motor_modes)
     ctrl = controller.Controller_PID_Point2Point(quad.get_state, quad.get_time, quad.set_motor_speeds,
-                                                 params=CONTROLLER_PARAMETERS, quad_identifier='q1')
+                                                 params=CONTROLLER_PARAMETERS, quad_identifier='q1', motor_modes=motor_modes)
     # Start the threads
     quad.start_thread(dt=QUAD_DYNAMICS_UPDATE, time_scaling=time_scale)
     ctrl.start_thread(update_rate=CONTROLLER_DYNAMICS_UPDATE, time_scaling=time_scale, goal_length=5)

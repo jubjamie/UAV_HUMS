@@ -6,9 +6,10 @@ import pandas as pd
 
 
 class Controller_PID_Point2Point:
-    def __init__(self, get_state, get_time, actuate_motors, params, quad_identifier):
+    def __init__(self, get_state, get_time, actuate_motors, params, quad_identifier, motor_modes):
         self.quad_identifier = quad_identifier
         self.actuate_motors = actuate_motors
+        self.motor_modes = motor_modes
         self.get_state = get_state
         self.get_time = get_time
         self.MOTOR_LIMITS = params['Motor_limits']
@@ -103,12 +104,13 @@ class Controller_PID_Point2Point:
         requests = np.array([m1, m2, m3, m4])
         local_ts = time.mktime(time.gmtime())
         wall_clock = (local_ts - self.ts_mt)
+        motor_staus = np.asarray(self.motor_modes, dtype=object)
         save_data_cat = np.concatenate(
-            (np.array([wall_clock, self.sim_clock]), location_dests, in_state, errors, angle_dests, requests))
+            (np.array([wall_clock, self.sim_clock]), location_dests, in_state, errors, angle_dests, requests, motor_staus))
         names = ['wall_clock', 'sim_clock', 'dest_x', 'dest_y', 'dest_z', 'x', 'y', 'z', 'x_dot', 'y_dot', 'z_dot',
                  'theta', 'phi', 'gamma', 'theta_dot', 'phi_dot', 'gamma_dot',
                  'x_error', 'y_error', 'z_error', 'theta_error', 'phi_error', 'gamma_dot_error', 'dest_theta',
-                 'dest_phi', 'dest_gamma', 'm1_r', 'm2_r', 'm3_r', 'm4_r']
+                 'dest_phi', 'dest_gamma', 'm1_r', 'm2_r', 'm3_r', 'm4_r', 'm1_mode', 'm2_mode', 'm3_mode', 'm4_mode']
         self.save_data(save_data_cat, names)
         # Actuate the motors
         self.actuate_motors(self.quad_identifier, M)
