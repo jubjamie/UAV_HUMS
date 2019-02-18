@@ -1,6 +1,8 @@
 import modelStore.Quadcopter_simulator.uav_lookup as uav_lookup
 import modelStore.Quadcopter_simulator.quad_sim as quad_sim
+from modelStore.Quadcopter_simulator import quadcopter
 import random
+import datetime
 
 
 class Sim:
@@ -28,16 +30,18 @@ class Sim:
         self.see_motor_gui = False
         self.see_gui = True
         self.time_scale = 1.0
+        self.quad = 0
 
-    def set_params(self, goals=None, yaws=None, quadcopter=None, ctlprms=None):
+    def set_params(self, goals=None, yaws=None, quad_params=None, ctlprms=None):
         if goals is not None:
             self.GOALS = goals
         if yaws is not None:
             self.YAWS = yaws
-        if quadcopter is not None:
-            self.QUADCOPTER = quadcopter
+        if quad_params is not None:
+            self.QUADCOPTER = quad_params
         if ctlprms is not None:
             self.CONTROLLER_PARAMETERS = ctlprms
+        self.quad = quadcopter.Quadcopter(self.QUADCOPTER, self.motor_modes)
         print('Basic Parameters Set')
 
     def set_failure_mode(self, setting='defined', mode='healthy'):
@@ -56,7 +60,11 @@ class Sim:
                 self.motor_modes = mode
         else:
             raise ValueError('set_failure_mode: Setting not recognised')
+        self.quad.motor_modes = self.motor_modes
         print('Set motor modes to: ' + str(self.motor_modes))
+
+    def get_failure_mode(self):
+        return self.motor_modes
 
     def run_sim(self):
         # Parse gui visibility logic
@@ -67,4 +75,5 @@ class Sim:
         else:
             self.gui_mode = 0
 
-        quad_sim.Single_Point2Point(self.GOALS, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes, self.gui_mode, self.time_scale)
+        self.quad.time = datetime.datetime.now()
+        quad_sim.Single_Point2Point(self.GOALS, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes, self.gui_mode, self.time_scale, self.quad)

@@ -143,6 +143,7 @@ class Quadcopter:
         return self.time
 
     def thread_run(self, dt, time_scaling):
+        self.run = True
         rate = time_scaling * dt
         last_update = self.time
         while self.run is True:

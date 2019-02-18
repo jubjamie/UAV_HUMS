@@ -52,6 +52,8 @@ class Controller_PID_Point2Point:
         self.sim_clock = 0
         self.ready_for_goal = False
 
+        print('Controller init')
+
     def wrap_angle(self, val):
         return (val + np.pi) % (2 * np.pi) - np.pi
 
@@ -154,12 +156,17 @@ class Controller_PID_Point2Point:
         self.yaw_target = self.wrap_angle(target)
 
     def thread_run(self, dt, time_scaling, goal_length):
+        print('ctrl thread init')
+        self.time = 0
         update_rate = dt * time_scaling
         last_update = self.get_time()
         while self.run is True:
             time.sleep(0)
             self.time = self.get_time()
+            print('self time: ' + str(self.time) + ' Last update: ' + str(last_update))
+            print('Target rate:' + str(update_rate))
             if (self.time - last_update).total_seconds() > update_rate:
+                # print('will update')
                 self.update()
                 last_update = self.time
                 self.sim_clock += dt
@@ -168,7 +175,8 @@ class Controller_PID_Point2Point:
                 if self.sim_clock % goal_length == 0:
                     #  Flag new target
                     self.ready_for_goal = True
-                    # print('Target flagging')
+                    print('Target flagging')
+        print('ctrl thread finished')
 
     def start_thread(self, update_rate=0.005, time_scaling=1, goal_length=5):
         self.thread_object = threading.Thread(target=self.thread_run, args=(update_rate, time_scaling, goal_length))
