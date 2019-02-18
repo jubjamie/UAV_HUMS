@@ -163,8 +163,8 @@ class Controller_PID_Point2Point:
         while self.run is True:
             time.sleep(0)
             self.time = self.get_time()
-            print('self time: ' + str(self.time) + ' Last update: ' + str(last_update))
-            print('Target rate:' + str(update_rate))
+            # print('self time: ' + str(self.time) + ' Last update: ' + str(last_update))
+            # print('Target rate:' + str(update_rate))
             if (self.time - last_update).total_seconds() > update_rate:
                 # print('will update')
                 self.update()
@@ -175,7 +175,7 @@ class Controller_PID_Point2Point:
                 if self.sim_clock % goal_length == 0:
                     #  Flag new target
                     self.ready_for_goal = True
-                    print('Target flagging')
+                    # print('Target flagging')
         print('ctrl thread finished')
 
     def start_thread(self, update_rate=0.005, time_scaling=1, goal_length=5):

@@ -42,6 +42,8 @@ def Single_Point2Point(GOALS, YAWS, QUADCOPTER, CONTROLLER_PARAMETERS, motor_mod
                 gui_object.update()
     ctrl.flush_buffer()
     print('Goals complete.\nStopping threads')
+    if gui_mode is not 0:
+        gui_object.stop_gui()
     quad.stop_thread()
     ctrl.stop_thread()
 

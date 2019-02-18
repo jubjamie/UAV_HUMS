@@ -75,5 +75,4 @@ class Sim:
         else:
             self.gui_mode = 0
 
-        self.quad.time = datetime.datetime.now()
         quad_sim.Single_Point2Point(self.GOALS, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes, self.gui_mode, self.time_scale, self.quad)

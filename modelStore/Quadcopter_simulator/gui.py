@@ -108,6 +108,9 @@ class GUI():
                 self.thrust_plot(self.thrust_values, self.rpm_values)
         plt.pause(0.000000000000001)
 
+    def stop_gui(self):
+        plt.close('all')
+
     def keypress_routine(self,event):
         sys.stdout.flush()
         if event.key == 'x':

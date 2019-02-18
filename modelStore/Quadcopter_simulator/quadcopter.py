@@ -43,8 +43,12 @@ class Quadcopter:
         self.time = datetime.datetime.now()
         for key in self.quads:
             self.quads[key]['state'] = np.zeros(12)
+            self.quads[key]['inits'] = np.zeros(12)
             self.quads[key]['state'][0:3] = self.quads[key]['position']
+            self.quads[key]['inits'][0:3] = self.quads[key]['position']
+            print('init position reset to ' + str(self.quads[key]['state'][0:3]))
             self.quads[key]['state'][6:9] = self.quads[key]['orientation']
+            self.quads[key]['inits'][6:9] = self.quads[key]['orientation']
             self.quads[key]['m1'] = Propeller(self.quads[key]['prop_size'][0], self.quads[key]['prop_size'][1])
             self.quads[key]['m2'] = Propeller(self.quads[key]['prop_size'][0], self.quads[key]['prop_size'][1])
             self.quads[key]['m3'] = Propeller(self.quads[key]['prop_size'][0], self.quads[key]['prop_size'][1])
@@ -58,6 +62,13 @@ class Quadcopter:
             self.quads[key]['I'] = np.array([[ixx, 0, 0], [0, iyy, 0], [0, 0, izz]])
             self.quads[key]['invI'] = np.linalg.inv(self.quads[key]['I'])
         self.run = True
+
+    def reset_position(self):
+        for key in self.quads:
+            self.quads[key]['state'] = np.zeros(12)
+            self.quads[key]['state'][0:3] = self.quads[key]['inits'][0:3]
+            self.quads[key]['state'][6:9] = self.quads[key]['inits'][6:9]
+        print('position reset to ' + str(self.quads[key]['state'][0:3]))
 
     def rotation_matrix(self, angles):
         ct = math.cos(angles[0])
@@ -152,6 +163,7 @@ class Quadcopter:
             if (self.time - last_update).total_seconds() > rate:
                 self.update(dt)
                 last_update = self.time
+        self.reset_position()
 
     def start_thread(self, dt=0.002, time_scaling=1):
         self.thread_object = threading.Thread(target=self.thread_run, args=(dt, time_scaling))
