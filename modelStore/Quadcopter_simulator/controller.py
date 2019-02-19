@@ -32,6 +32,7 @@ class Controller_PID_Point2Point:
         self.gammai_term = 0
         self.angle_error_dots = np.zeros(3)
         self.last_angle_errors = np.zeros(3)
+        self.dt_step = 0.005
         self.thread_object = None
         self.target = [0, 0, 0]
         self.yaw_target = 0.0
@@ -87,6 +88,7 @@ class Controller_PID_Point2Point:
         gamma_dot_error = (self.YAW_RATE_SCALER * self.wrap_angle(dest_gamma - gamma)) - gamma_dot
         self.angle_error_dots[:] = [theta_error - self.last_angle_errors[0], phi_error - self.last_angle_errors[1],
                                     gamma_dot_error - self.last_angle_errors[2]]
+        self.angle_error_dots = self.angle_error_dots/self.dt_step
         self.last_angle_errors[:] = [theta_error, phi_error, gamma_dot_error]
         self.thetai_term += self.ANGULAR_I[0] * theta_error
         self.phii_term += self.ANGULAR_I[1] * phi_error
@@ -167,6 +169,7 @@ class Controller_PID_Point2Point:
     def thread_run(self, dt, time_scaling, goal_length):
         print('ctrl thread init')
         self.time = 0
+        self.dt_step = dt
         update_rate = dt * time_scaling
         last_update = self.get_time()
         while self.run is True:
