@@ -2,6 +2,7 @@ modelStore/FYP-Cyclocopter-Controller/half_quad_grt_rtw/build_exception.mat
 modelStore/FYP-Cyclocopter-Controller/slprj/sl_proj.tmw
 modelStore/FYP-Cyclocopter-Controller/slprj/grt/half_quad/tmwinternal/minfo.mat
 modelStore/FYP-Cyclocopter-Controller/Data/
+databin/
 *.m~
 # Python byte code
 *.pyc
@@ -11,3 +12,4 @@ modelStore/FYP-Cyclocopter-Controller/Data/
 .idea/vcs.xml
 .idea/misc.xml
 .idea/UAV_HUMS.iml
+.idea/inspectionProfiles/Project_Default.xml
