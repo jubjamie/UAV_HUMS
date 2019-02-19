@@ -82,6 +82,13 @@ def getangles():
     return angle_data_n
 
 
+def getangleerrors():
+    angle_data = flight_df[['theta_error', 'phi_error', 'gamma_dot_error', 'theta_error_dot', 'phi_error_dot',
+                            'gamma_dot_error_dot']]
+    angle_data_n = angle_data.to_numpy()
+    return angle_data_n
+
+
 def plotangles():
     angle_data_n = getangles()
 
@@ -99,6 +106,30 @@ def plotangles():
     angleplot_axs[2].plot(time_data, angle_data_n[:, 2])
     angleplot_axs[2].plot(time_data, angle_data_n[:, 5], 'r--')
     angleplot_axs[2].set_title('Gamma - Yaw')
+
+    plt.show()
+
+
+def plotangleerrors():
+    angle_error_data_n = getangleerrors()
+
+    angleplot_fig, angleplot_axs = plt.subplots(3, 2, sharex='all')
+    angleplot_fig.suptitle('Angle Error Scope')
+
+    #  Calculate time axes
+    time_data = get_timedata()
+    angleplot_axs[0, 0].plot(time_data, angle_error_data_n[:, 0])
+    angleplot_axs[0, 1].plot(time_data, angle_error_data_n[:, 3], 'r')
+    angleplot_axs[0, 0].set_title('Theta Error - Roll')
+    angleplot_axs[0, 1].set_title('Theta Error Dot - Roll')
+    angleplot_axs[1, 0].plot(time_data, angle_error_data_n[:, 1])
+    angleplot_axs[1, 1].plot(time_data, angle_error_data_n[:, 4], 'r')
+    angleplot_axs[1, 0].set_title('Phi Error - Pitch')
+    angleplot_axs[1, 1].set_title('Phi Error Dot - Pitch')
+    angleplot_axs[2, 0].plot(time_data, angle_error_data_n[:, 2])
+    angleplot_axs[2, 1].plot(time_data, angle_error_data_n[:, 5], 'r')
+    angleplot_axs[2, 0].set_title('Gamma dot Error - Yaw')
+    angleplot_axs[2, 1].set_title('Gamma dot Error Dot- Yaw')
 
     plt.show()
 
@@ -123,9 +154,11 @@ b_exit = Button(root, text='Exit', command=enda)
 b_fp = Button(root, text='Plot Flight Path', command=plotfp)
 b_fpt = Button(root, text='Plot Flight Path Traces', command=plotfptrace)
 b_an = Button(root, text='Plot Angle Traces', command=plotangles)
+b_an_e = Button(root, text='Plot Angle Error Traces', command=plotangleerrors)
 b_fp.pack()
 b_fpt.pack()
 b_an.pack()
+b_an_e.pack()
 b_exit.pack()
 
 mainloop()
