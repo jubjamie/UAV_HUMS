@@ -30,6 +30,8 @@ class Controller_PID_Point2Point:
         self.thetai_term = 0
         self.phii_term = 0
         self.gammai_term = 0
+        self.angle_error_dots = np.zeros(3)
+        self.last_angle_errors = np.zeros(3)
         self.thread_object = None
         self.target = [0, 0, 0]
         self.yaw_target = 0.0
@@ -83,6 +85,9 @@ class Controller_PID_Point2Point:
         theta_error = dest_theta - theta
         phi_error = dest_phi - phi
         gamma_dot_error = (self.YAW_RATE_SCALER * self.wrap_angle(dest_gamma - gamma)) - gamma_dot
+        self.angle_error_dots[:] = [theta_error - self.last_angle_errors[0], phi_error - self.last_angle_errors[1],
+                                    gamma_dot_error - self.last_angle_errors[2]]
+        self.last_angle_errors[:] = [theta_error, phi_error, gamma_dot_error]
         self.thetai_term += self.ANGULAR_I[0] * theta_error
         self.phii_term += self.ANGULAR_I[1] * phi_error
         self.gammai_term += self.ANGULAR_I[2] * gamma_dot_error
@@ -106,11 +111,13 @@ class Controller_PID_Point2Point:
         wall_clock = (local_ts - self.ts_mt)
         motor_staus = np.asarray(self.motor_modes, dtype=object)
         save_data_cat = np.concatenate(
-            (np.array([wall_clock, self.sim_clock]), location_dests, in_state, errors, angle_dests, requests, motor_staus))
+            (np.array([wall_clock, self.sim_clock]), location_dests, in_state, errors, self.angle_error_dots,
+             angle_dests, requests, motor_staus))
         names = ['wall_clock', 'sim_clock', 'dest_x', 'dest_y', 'dest_z', 'x', 'y', 'z', 'x_dot', 'y_dot', 'z_dot',
                  'theta', 'phi', 'gamma', 'theta_dot', 'phi_dot', 'gamma_dot',
-                 'x_error', 'y_error', 'z_error', 'theta_error', 'phi_error', 'gamma_dot_error', 'dest_theta',
-                 'dest_phi', 'dest_gamma', 'm1_r', 'm2_r', 'm3_r', 'm4_r', 'm1_mode', 'm2_mode', 'm3_mode', 'm4_mode']
+                 'x_error', 'y_error', 'z_error', 'theta_error', 'phi_error', 'gamma_dot_error', 'theta_error_dot',
+                 'phi_error_dot', 'gamma_dot_error_dot', 'dest_theta', 'dest_phi', 'dest_gamma', 'm1_r', 'm2_r', 'm3_r',
+                 'm4_r', 'm1_mode', 'm2_mode', 'm3_mode', 'm4_mode']
         self.save_data(save_data_cat, names)
         # Actuate the motors
         self.actuate_motors(self.quad_identifier, M)
