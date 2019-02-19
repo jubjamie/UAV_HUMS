@@ -10,9 +10,9 @@ root = Tk()
 
 
 def pickFile():
-    root.filename = filedialog.askopenfilename(initialdir="databin/", title="Select file",
-                                               filetypes=(("csv Flight Data", "*.csv"), ("all files", "*.*")))
-    return root.filename
+    filename = filedialog.askopenfilename(initialdir="databin/", title="Select file",
+                                          filetypes=(("csv Flight Data", "*.csv"), ("all files", "*.*")))
+    return filename
 
 
 flight_df = pd.read_csv(pickFile(), header=0, index_col=None)
@@ -69,6 +69,8 @@ def plotfptrace():
     fpplot_axs[2].plot(time_data, path_data_n[:, 5], 'r--')
     fpplot_axs[2].set_title('z - Alt')
 
+    plt.xlim(0, np.max(time_data))
+    plt.subplots_adjust(hspace=0.38)
     plt.show()
 
 
@@ -107,6 +109,8 @@ def plotangles():
     angleplot_axs[2].plot(time_data, angle_data_n[:, 5], 'r--')
     angleplot_axs[2].set_title('Gamma - Yaw')
 
+    plt.subplots_adjust(hspace=0.38)
+    plt.xlim(0, np.max(time_data))
     plt.show()
 
 
@@ -131,6 +135,9 @@ def plotangleerrors():
     angleplot_axs[2, 0].set_title('Gamma dot Error - Yaw')
     angleplot_axs[2, 1].set_title('Gamma dot Error Dot- Yaw')
 
+    angleplot_fig.set_size_inches(11, 6)
+    plt.subplots_adjust(hspace=0.38, wspace=0.3)
+    plt.xlim(0, np.max(time_data))
     plt.show()
 
 
