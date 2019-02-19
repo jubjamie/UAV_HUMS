@@ -161,4 +161,7 @@ b_an.pack()
 b_an_e.pack()
 b_exit.pack()
 
+# Window Stuff
+root.title('UAV Sim File Analysis Tools')
+
 mainloop()
