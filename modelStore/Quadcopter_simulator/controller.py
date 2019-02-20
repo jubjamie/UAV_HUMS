@@ -6,7 +6,7 @@ import pandas as pd
 
 
 class Controller_PID_Point2Point:
-    def __init__(self, get_state, get_time, actuate_motors, params, quad_identifier, motor_modes):
+    def __init__(self, get_state, get_time, actuate_motors, params, quad_identifier, motor_modes, save_path):
         self.quad_identifier = quad_identifier
         self.actuate_motors = actuate_motors
         self.motor_modes = motor_modes
@@ -50,7 +50,7 @@ class Controller_PID_Point2Point:
         self.ts = time.gmtime()
         self.ts_mt = time.mktime(self.ts)
         self.init_timestamp = time.strftime("%Y_%m_%d--%H-%M-%S", self.ts)
-        self.save_path = 'databin/test1/' + self.init_timestamp + '.csv'
+        self.save_path = save_path + self.init_timestamp + '.csv'
 
         # Sim time
         self.sim_clock = 0

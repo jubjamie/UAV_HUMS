@@ -8,4 +8,5 @@ newSim.set_params(goals=GOALS)
 newSim.set_failure_mode(setting='random')
 newSim.see_gui = False
 newSim.time_scale = 0
+newSim.ask_save_destination()
 newSim.run_sim()

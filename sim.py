@@ -3,6 +3,8 @@ import modelStore.Quadcopter_simulator.quad_sim as quad_sim
 from modelStore.Quadcopter_simulator import quadcopter
 import random
 import datetime
+from tkinter import filedialog
+from tkinter import *
 
 
 class Sim:
@@ -31,6 +33,7 @@ class Sim:
         self.see_gui = True
         self.time_scale = 1.0
         self.quad = 0
+        self.save_path = None
 
     def set_params(self, goals=None, yaws=None, quad_params=None, ctlprms=None):
         if goals is not None:
@@ -66,6 +69,20 @@ class Sim:
     def get_failure_mode(self):
         return self.motor_modes
 
+    def ask_save_destination(self):
+        destination = str(filedialog.askdirectory())
+        if not destination:
+            sys.exit(0)
+        else:
+            print('Save path: ' + destination)
+            self.set_save_destination(destination)
+        return destination
+
+    def set_save_destination(self, path='databin/test1/'):
+        if path is None:
+            path = self.ask_save_destination()
+        self.save_path = path
+
     def run_sim(self):
         # Parse gui visibility logic
         if self.see_gui is True and self.see_motor_gui is True:
@@ -75,4 +92,4 @@ class Sim:
         else:
             self.gui_mode = 0
 
-        quad_sim.Single_Point2Point(self.GOALS, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes, self.gui_mode, self.time_scale, self.quad)
+        quad_sim.Single_Point2Point(self.GOALS, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes, self.gui_mode, self.time_scale, self.quad, self.save_path)
