@@ -50,7 +50,7 @@ class Controller_PID_Point2Point:
         self.ts = time.gmtime()
         self.ts_mt = time.mktime(self.ts)
         self.init_timestamp = time.strftime("%Y_%m_%d--%H-%M-%S", self.ts)
-        self.save_path = save_path + self.init_timestamp + '.csv'
+        self.save_path = save_path + '/' + self.init_timestamp + '.csv'
 
         # Sim time
         self.sim_clock = 0
