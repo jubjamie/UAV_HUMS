@@ -49,6 +49,9 @@ class Sim:
         self.quad = quadcopter.Quadcopter(self.QUADCOPTER, self.motor_modes)
         print('Basic Parameters Set')
 
+    def reset_goals_to(self, goals):
+        self.GOALS = goals
+
     def set_failure_mode(self, setting='defined', mode='healthy'):
         if setting == 'random':
             self.motor_modes = [random.choices(uav_lookup.modelist, weights=[70, 30])[0],
