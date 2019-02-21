@@ -26,8 +26,7 @@ for file in os.listdir(mydir):
         filepath = os.path.join(mydir, file)
         flight_df = pd.read_csv(filepath, header=0, index_col=None)
         labels = np.append(labels, get_motor_status(flight_df))
-        flight_df = flight_df[['theta_error', 'phi_error', 'gamma_dot_error', 'theta_error_dot', 'phi_error_dot',
-                               'gamma_dot_error_dot']]
+        flight_df = flight_df[['theta_error', 'phi_error', 'theta_error_dot', 'phi_error_dot']]
         flight_df_n = flight_df.to_numpy()
         data.append([flight_df_n])
 
