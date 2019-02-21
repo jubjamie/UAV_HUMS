@@ -29,7 +29,8 @@ def Single_Point2Point(GOALS, goal_length, YAWS, QUADCOPTER, CONTROLLER_PARAMETE
     inittime = quad.get_time()
     for goal, y in zip(GOALS, YAWS):
         print(['Goal: ' + str(goal)])
-        gui_object.goal_plot_activated(goal)
+        if gui_mode is not 0:
+            gui_object.goal_plot_activated(goal)
         ctrl.update_target(goal)
         ctrl.update_yaw_target(y)
         ctrl.ready_for_goal = False
