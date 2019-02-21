@@ -81,6 +81,9 @@ class GUI:
         for goal in goals:
             self.ax.plot([goal[0]], [goal[1]], [goal[2]], marker='o', color='black', markersize=3, antialiased=False)
 
+    def goal_plot_activated(self, goal):
+        self.ax.plot([goal[0]], [goal[1]], [goal[2]], marker='o', color='green', markersize=5, antialiased=False)
+
     def update(self):
         for key in self.quads:
             R = self.rotation_matrix(self.quads[key]['orientation'])

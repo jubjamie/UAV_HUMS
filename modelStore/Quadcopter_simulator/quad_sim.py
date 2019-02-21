@@ -29,6 +29,7 @@ def Single_Point2Point(GOALS, YAWS, QUADCOPTER, CONTROLLER_PARAMETERS, motor_mod
     inittime = quad.get_time()
     for goal, y in zip(GOALS, YAWS):
         print(['Goal: ' + str(goal)])
+        gui_object.goal_plot_activated(goal)
         ctrl.update_target(goal)
         ctrl.update_yaw_target(y)
         ctrl.ready_for_goal = False
