@@ -2,7 +2,6 @@ import modelStore.Quadcopter_simulator.uav_lookup as uav_lookup
 import modelStore.Quadcopter_simulator.quad_sim as quad_sim
 from modelStore.Quadcopter_simulator import quadcopter
 import random
-import datetime
 from tkinter import filedialog
 from tkinter import *
 

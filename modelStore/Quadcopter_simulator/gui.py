@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as Axes3D
 import sys
 
+
 class GUI():
     # 'quad_list' is a dictionary of format: quad_list = {'quad_1_name':{'position':quad_1_position,'orientation':quad_1_orientation,'arm_span':quad_1_arm_span}, ...}
     def __init__(self, gui_mode, quads, goals, motor_modes):
@@ -26,7 +27,7 @@ class GUI():
         self.motor_modes = motor_modes
         self.c_bank = ['blue', 'blue', 'blue', 'blue']
         for mid, m in enumerate(self.motor_modes):
-            self.c_bank[mid]='blue' if m == 'healthy' else 'red'
+            self.c_bank[mid] = 'blue' if m == 'healthy' else 'red'
         if self.gui_mode is 2:
             self.thrust_fig, self.thrust_axs = plt.subplots(ncols=1, nrows=2)
             self.thrust_ax = self.thrust_axs[0]
