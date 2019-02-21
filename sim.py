@@ -17,7 +17,7 @@ class Sim:
                    'weight': 1.2}}
         # Controller parameters
         self.CONTROLLER_PARAMETERS = {'Motor_limits': [7000, 27000],
-                                      'Tilt_limits': [-30, 30],
+                                      'Tilt_limits': [-10, 10],
                                       'Yaw_Control_Limits': [-900, 900],
                                       'Z_XY_offset': 500,
                                       'Linear_PID': {'P': [300, 300, 7000], 'I': [0.04, 0.04, 4.5],
