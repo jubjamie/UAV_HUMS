@@ -9,8 +9,8 @@ import random
 def randomgoals(count):
     goals = []
     for i in range(count):
-        x = random.randrange(-25, 25)
-        y = random.randrange(-25, 25)
-        z = random.randrange(20, 100) / 10
+        x = random.randrange(-10, 10)
+        y = random.randrange(-10, 10)
+        z = random.randrange(20, 60) / 10
         goals.append([x, y, z])
     return goals
