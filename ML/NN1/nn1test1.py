@@ -35,5 +35,3 @@ print(labels)
 
 X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.25)
 
-print(X_train)
-print(y_train)
