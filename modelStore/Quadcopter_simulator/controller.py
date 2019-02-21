@@ -165,7 +165,11 @@ class Controller_PID_Point2Point:
     def flush_buffer(self):
         self.flush_override = True
         print('Flushing buffer to file')
-        self.save_buffer.to_csv(self.save_path, index=False, header=False, mode='a')
+        if self.header_tracker is False:
+            self.save_buffer.to_csv(self.save_path, index=False, header=True, mode='a')
+            self.header_tracker = True
+        else:
+            self.save_buffer.to_csv(self.save_path, index=False, header=False, mode='a')
 
     def update_target(self, target):
         self.target = target
