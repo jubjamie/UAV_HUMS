@@ -10,6 +10,7 @@ class GUI:
         self.gui_mode = gui_mode
         self.quads = quads
         self.fig = plt.figure()
+        self.fig.set_size_inches(9, 7)
         self.ax = Axes3D.Axes3D(self.fig)
         self.goals = np.asarray(goals)
         self.ax.set_xlim3d([np.min(self.goals[:, 0]-2), np.max(self.goals[:, 0]+2)])
