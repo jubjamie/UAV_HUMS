@@ -44,8 +44,9 @@ class Controller_PID_Point2Point:
         self.buffer_counter = 0
         self.step_ignore_limit = 10
         self.step_ignore = self.step_ignore_limit
-        self.buffer_size = 200
+        self.buffer_size = 511
         self.header_tracker = False
+        self.flush_override = False
 
         self.ts = time.gmtime()
         self.ts_mt = time.mktime(self.ts)
@@ -125,38 +126,44 @@ class Controller_PID_Point2Point:
         self.actuate_motors(self.quad_identifier, M)
 
     def save_data(self, data, col_names):
-        if self.step_ignore < self.step_ignore_limit:
-            # Skip
-            self.step_ignore += 1
-        else:
-            # Save to buffer
-            self.step_ignore = 1
-            if self.buffer_counter == 0:
-                # New buffer
-                self.save_buffer = pd.DataFrame([data], columns=col_names)
-                self.buffer_counter += 1
-                print('New buffer')
-            elif self.buffer_counter < self.buffer_size:
-                #  Append to buffer
-                local_data_df = pd.DataFrame([data], columns=col_names)
-                self.save_buffer = self.save_buffer.append(local_data_df, ignore_index=True)
-                self.buffer_counter += 1
-                # print('Writing to buffer. Length: ' + str(len(self.save_buffer.index)))
-                #  print(self.save_buffer)
-            elif self.buffer_counter >= self.buffer_size:
-                #  Append buffer to file
-                if self.header_tracker is False:
-                    self.save_buffer.to_csv(self.save_path, index=False, header=True, mode='a')
-                    self.header_tracker = True
-                else:
-                    self.save_buffer.to_csv(self.save_path, index=False, header=False, mode='a')
-                self.buffer_counter = 0
-                print('Writing to file')
+        if not self.flush_override:
+            if self.step_ignore < self.step_ignore_limit:
+                # Skip
+                self.step_ignore += 1
             else:
-                # print('Buffer counter error, skipping. Count @ ' + str(self.buffer_counter))
-                pass
+                # Save to buffer
+                self.step_ignore = 1
+                if self.buffer_counter == 0:
+                    # New buffer
+                    self.save_buffer = pd.DataFrame([data], columns=col_names)
+                    self.buffer_counter += 1
+                    print('New buffer')
+                elif self.buffer_counter < self.buffer_size:
+                    #  Append to buffer
+                    local_data_df = pd.DataFrame([data], columns=col_names)
+                    self.save_buffer = self.save_buffer.append(local_data_df, ignore_index=True)
+                    self.buffer_counter += 1
+                    # print('Writing to buffer. Length: ' + str(len(self.save_buffer.index)))
+                    #  print(self.save_buffer)
+                elif self.buffer_counter >= self.buffer_size:
+                    #  Append buffer to file
+                    if self.header_tracker is False:
+                        self.save_buffer.to_csv(self.save_path, index=False, header=True, mode='a')
+                        self.header_tracker = True
+                    else:
+                        self.save_buffer.to_csv(self.save_path, index=False, header=False, mode='a')
+                    self.buffer_counter = 0
+                    self.save_buffer = pd.DataFrame([data], columns=col_names)
+                    print('Writing to file @ sim-clock: ' + str(self.sim_clock))
+                else:
+                    print('Buffer counter error, skipping. Count @ ' + str(self.buffer_counter))
+                    pass
+        else:
+            # print('Flush in progress. Saving override activated.')
+            pass
 
     def flush_buffer(self):
+        self.flush_override = True
         print('Flushing buffer to file')
         self.save_buffer.to_csv(self.save_path, index=False, header=False, mode='a')
 
