@@ -9,6 +9,7 @@ from tkinter import *
 class Sim:
     def __init__(self):
         self.GOALS = [(0, 0, 3), (2, -2, 4), (-1.5, 1.5, 1)]
+        self.goal_time = 5
         self.YAWS = [0, 3.14, -1.54, 1.54]
         # Define the quadcopters
         self.QUADCOPTER = {
@@ -34,7 +35,7 @@ class Sim:
         self.quad = 0
         self.save_path = None
 
-    def set_params(self, goals=None, yaws=None, quad_params=None, ctlprms=None):
+    def set_params(self, goals=None, yaws=None, quad_params=None, ctlprms=None, goal_time=None):
         if goals is not None:
             self.GOALS = goals
         if yaws is not None:
@@ -43,6 +44,8 @@ class Sim:
             self.QUADCOPTER = quad_params
         if ctlprms is not None:
             self.CONTROLLER_PARAMETERS = ctlprms
+        if goal_time is not None:
+            self.goal_time = goal_time
         self.quad = quadcopter.Quadcopter(self.QUADCOPTER, self.motor_modes)
         print('Basic Parameters Set')
 
@@ -91,4 +94,4 @@ class Sim:
         else:
             self.gui_mode = 0
 
-        quad_sim.Single_Point2Point(self.GOALS, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes, self.gui_mode, self.time_scale, self.quad, self.save_path)
+        quad_sim.Single_Point2Point(self.GOALS, self.goal_time, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes, self.gui_mode, self.time_scale, self.quad, self.save_path)

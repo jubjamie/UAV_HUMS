@@ -11,7 +11,7 @@ CONTROLLER_DYNAMICS_UPDATE = 0.005  # seconds
 run = True
 
 
-def Single_Point2Point(GOALS, YAWS, QUADCOPTER, CONTROLLER_PARAMETERS, motor_modes, gui_mode, time_scale, quad, save_path):
+def Single_Point2Point(GOALS, goal_length, YAWS, QUADCOPTER, CONTROLLER_PARAMETERS, motor_modes, gui_mode, time_scale, quad, save_path):
     # Catch Ctrl+C to stop threads
     gui_object = []
     signal.signal(signal.SIGINT, signal_handler)
@@ -23,7 +23,7 @@ def Single_Point2Point(GOALS, YAWS, QUADCOPTER, CONTROLLER_PARAMETERS, motor_mod
                                                  params=CONTROLLER_PARAMETERS, quad_identifier='q1', motor_modes=motor_modes, save_path=save_path)
     # Start the threads
     quad.start_thread(dt=QUAD_DYNAMICS_UPDATE, time_scaling=time_scale)
-    ctrl.start_thread(update_rate=CONTROLLER_DYNAMICS_UPDATE, time_scaling=time_scale, goal_length=5)
+    ctrl.start_thread(update_rate=CONTROLLER_DYNAMICS_UPDATE, time_scaling=time_scale, goal_length=goal_length)
     # Update the GUI while switching between destination positions
     print('Starting goals')
     inittime = quad.get_time()
