@@ -15,7 +15,7 @@ class GUI:
         self.goals = np.asarray(goals)
         self.ax.set_xlim3d([np.min(self.goals[:, 0]-2), np.max(self.goals[:, 0]+2)])
         self.ax.set_xlabel('X')
-        self.ax.set_ylim3d([np.min(self.goals[:, 1]-2), np.max(self.goals[:, ]+2)])
+        self.ax.set_ylim3d([np.min(self.goals[:, 1]-2), np.max(self.goals[:, 1]+2)])
         self.ax.set_ylabel('Y')
         self.ax.set_zlim3d([0, np.max(self.goals[:, 2]+2)])
         self.ax.set_zlabel('Z')
