@@ -64,7 +64,7 @@ rsf4 = np.array(
      [16826, 211.5],
      [16840, 221]])
 
-alldata = {'healthy': healthy, 'mf1': motorFailure1, 'rsf2': rfs2}
+alldata = {'healthy': healthy, 'mf1': motorFailure1, 'rsf2': rfs2, 'rsf4': rsf4}
 
 
 def plotprofile(mode):
