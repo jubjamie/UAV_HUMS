@@ -54,10 +54,10 @@ class Sim:
 
     def set_failure_mode(self, setting='defined', mode='healthy'):
         if setting == 'random':
-            self.motor_modes = [random.choices(uav_lookup.modelist, weights=[70, 30])[0],
-                                random.choices(uav_lookup.modelist, weights=[70, 30])[0],
-                                random.choices(uav_lookup.modelist, weights=[70, 30])[0],
-                                random.choices(uav_lookup.modelist, weights=[70, 30])[0]]
+            self.motor_modes = [random.choices(uav_lookup.modelist, weights=[70, 7, 7, 7, 9])[0],
+                                random.choices(uav_lookup.modelist, weights=[70, 7, 7, 7, 9])[0],
+                                random.choices(uav_lookup.modelist, weights=[70, 7, 7, 7, 9])[0],
+                                random.choices(uav_lookup.modelist, weights=[70, 7, 7, 7, 9])[0]]
         elif setting == 'defined':
             if type(mode) is not list:
                 if mode in uav_lookup.modelist:

@@ -112,10 +112,10 @@ class Controller_PID_Point2Point:
         requests = np.array([m1, m2, m3, m4])
         local_ts = time.mktime(time.gmtime())
         wall_clock = (local_ts - self.ts_mt)
-        motor_staus = np.asarray(self.motor_modes, dtype=object)
+        motor_status = np.asarray(self.motor_modes, dtype=object)
         save_data_cat = np.concatenate(
             (np.array([wall_clock, self.sim_clock]), location_dests, in_state, errors, self.angle_error_dots,
-             angle_dests, requests, motor_staus))
+             angle_dests, requests, motor_status))
         names = ['wall_clock', 'sim_clock', 'dest_x', 'dest_y', 'dest_z', 'x', 'y', 'z', 'x_dot', 'y_dot', 'z_dot',
                  'theta', 'phi', 'gamma', 'theta_dot', 'phi_dot', 'gamma_dot',
                  'x_error', 'y_error', 'z_error', 'theta_error', 'phi_error', 'gamma_dot_error', 'theta_error_dot',
