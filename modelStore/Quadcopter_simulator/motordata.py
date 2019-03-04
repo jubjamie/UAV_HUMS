@@ -64,7 +64,8 @@ rsf4 = np.array(
      [15452, 174.6],
      [16826, 211.5],
      [16840, 221],
-     [27000, 489]])  # Double 2.8
+     [24000, 526],
+     [27000, 738]])  # Double 2.8
 
 alldata = {'healthy': healthy, 'mf1': motorFailure1, 'rsf2': rsf2, 'rsf4': rsf4}
 
@@ -80,3 +81,15 @@ def plotprofile(mode):
     plt.xlabel('RPM')
     plt.ylabel('gram-force')
     plt.show()
+
+
+def noise(mean, std):
+    noise_y = np.random.normal(mean, std, 2000)
+    noise_x = np.linspace(1, 2000, num=2000)
+    plt.figure()
+    plt.plot(noise_x, noise_y)
+    plt.show()
+
+#plotprofile('rsf4')
+
+#noise(170,109)
