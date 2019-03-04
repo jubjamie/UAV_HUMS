@@ -52,7 +52,8 @@ rsf2 = np.array(
      [13603, 219],
      [14264, 233],
      [14751, 254],
-     [15417, 268]])
+     [15417, 268],
+     [27000,500]])  # Double small tip
 
 rsf4 = np.array(
     [[9246, 33.5],
@@ -62,9 +63,10 @@ rsf4 = np.array(
      [14982, 160],
      [15452, 174.6],
      [16826, 211.5],
-     [16840, 221]])
+     [16840, 221],
+     [27000, 489]])  # Double 2.8
 
-alldata = {'healthy': healthy, 'mf1': motorFailure1, 'rsf2': rfs2, 'rsf4': rsf4}
+alldata = {'healthy': healthy, 'mf1': motorFailure1, 'rsf2': rsf2, 'rsf4': rsf4}
 
 
 def plotprofile(mode):
