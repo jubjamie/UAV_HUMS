@@ -2,8 +2,8 @@ import sim
 import simutilities
 
 # Set goals/yaws to go to
-GOALS = simutilities.randomgoals(1)
-# GOALS = [(0, 0, 3), (2, -2, 3), (-1.5, 1.5, 3)]
+#GOALS = simutilities.randomgoals(1)
+GOALS = [(0, 0, 3), (2, -2, 3)]
 
 newSim = sim.Sim()
 newSim.set_params(goals=GOALS, goal_time=15)
