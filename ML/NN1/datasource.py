@@ -24,7 +24,7 @@ def get_data(asdict=False):
     data = []
     labels = np.array([])
 
-    mydir = "../../databin/set1ThursEve0307/"
+    mydir = "../../databin/set3FriEve0308/"
 
     for file in os.listdir(mydir):
         if file.endswith(".csv"):
