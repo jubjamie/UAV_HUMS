@@ -24,7 +24,7 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=
 #tb
 tb_cb = tf.keras.callbacks.TensorBoard(log_dir='./logs', write_graph=True, update_freq='epoch')
 
-model.fit(X_train, y_train, epochs=10, callbacks=[tb_cb])
+model.fit(X_train, y_train, batch_size=50, epochs=20, callbacks=[tb_cb])
 
 print('Training Complete - Saving Model')
 model.summary()
