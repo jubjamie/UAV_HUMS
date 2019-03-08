@@ -6,7 +6,7 @@ import random
 from sklearn.model_selection import train_test_split
 
 pollingcycles = 5
-timepointwidth = 100
+timepointwidth = 10
 
 def get_motor_status(fdata):
     motor_modes = fdata[['m1_mode', 'm2_mode', 'm3_mode', 'm4_mode']].iloc[0]
