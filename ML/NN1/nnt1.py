@@ -1,6 +1,10 @@
 import tensorflow as tf
 from tensorflow import keras
 import datasource
+import time
+
+ts = time.gmtime()
+
 
 # get bulk data
 X_train, y_train, X_test, y_test = datasource.get_data()
@@ -14,7 +18,12 @@ model = keras.Sequential([
 ])
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.fit(X_train, y_train, epochs=5)
+
+model.fit(X_train, y_train, epochs=10)
+
+print('Training Complete - Saving Model')
+model.summary()
+model.save('models/nnt1.h5')
 
 test_loss, test_acc = model.evaluate(X_test, y_test)
 
