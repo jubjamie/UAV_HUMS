@@ -123,15 +123,21 @@ def plotangleerrors():
     #  Calculate time axes
     time_data = get_timedata()
     angleplot_axs[0, 0].plot(time_data, angle_error_data_n[:, 0])
-    angleplot_axs[0, 1].plot(time_data, angle_error_data_n[:, 3], 'r')
+    angleplot_axs[0, 1].plot(time_data, np.clip(angle_error_data_n[:, 3],
+                                                a_min=np.percentile(angle_error_data_n[:, 3], 0.5),
+                                                a_max=np.percentile(angle_error_data_n[:, 3], 99.5)), 'r')
     angleplot_axs[0, 0].set_title('Theta Error - Roll')
     angleplot_axs[0, 1].set_title('Theta Error Dot - Roll')
     angleplot_axs[1, 0].plot(time_data, angle_error_data_n[:, 1])
-    angleplot_axs[1, 1].plot(time_data, angle_error_data_n[:, 4], 'r')
+    angleplot_axs[1, 1].plot(time_data, np.clip(angle_error_data_n[:, 4],
+                                                a_min=np.percentile(angle_error_data_n[:, 4], 0.5),
+                                                a_max=np.percentile(angle_error_data_n[:, 4], 99.5)), 'r')
     angleplot_axs[1, 0].set_title('Phi Error - Pitch')
     angleplot_axs[1, 1].set_title('Phi Error Dot - Pitch')
     angleplot_axs[2, 0].plot(time_data, angle_error_data_n[:, 2])
-    angleplot_axs[2, 1].plot(time_data, angle_error_data_n[:, 5], 'r')
+    angleplot_axs[2, 1].plot(time_data, np.clip(angle_error_data_n[:, 5],
+                                                a_min=np.percentile(angle_error_data_n[:, 5], 0.5),
+                                                a_max=np.percentile(angle_error_data_n[:, 5], 99.5)), 'r')
     angleplot_axs[2, 0].set_title('Gamma dot Error - Yaw')
     angleplot_axs[2, 1].set_title('Gamma dot Error Dot- Yaw')
 

@@ -20,8 +20,8 @@ class Sim:
                                       'Tilt_limits': [-10, 10],
                                       'Yaw_Control_Limits': [-900, 900],
                                       'Z_XY_offset': 500,
-                                      'Linear_PID': {'P': [300, 300, 7000], 'I': [0.04, 0.04, 4.5],
-                                                     'D': [450, 450, 5000]},
+                                      'Linear_PID': {'P': [300, 300, 8000], 'I': [0.04, 0.04, 20],
+                                                     'D': [450, 450, 4500]},
                                       'Linear_To_Angular_Scaler': [1, 1, 0],
                                       'Yaw_Rate_Scaler': 0.18,
                                       'Angular_PID': {'P': [22000, 22000, 1500], 'I': [0, 0, 1.2],
@@ -54,10 +54,10 @@ class Sim:
 
     def set_failure_mode(self, setting='defined', mode='healthy'):
         if setting == 'random':
-            self.motor_modes = [random.choices(uav_lookup.modelist, weights=[70, 30])[0],
-                                random.choices(uav_lookup.modelist, weights=[70, 30])[0],
-                                random.choices(uav_lookup.modelist, weights=[70, 30])[0],
-                                random.choices(uav_lookup.modelist, weights=[70, 30])[0]]
+            self.motor_modes = [random.choices(uav_lookup.modelist, weights=[70, 7, 7, 7, 9])[0],
+                                random.choices(uav_lookup.modelist, weights=[70, 7, 7, 7, 9])[0],
+                                random.choices(uav_lookup.modelist, weights=[70, 7, 7, 7, 9])[0],
+                                random.choices(uav_lookup.modelist, weights=[70, 7, 7, 7, 9])[0]]
         elif setting == 'defined':
             if type(mode) is not list:
                 if mode in uav_lookup.modelist:
