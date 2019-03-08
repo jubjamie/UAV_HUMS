@@ -5,6 +5,8 @@ import numpy as np
 import random
 from sklearn.model_selection import train_test_split
 
+pollingcycles = 5
+timepointwidth = 100
 
 def get_motor_status(fdata):
     motor_modes = fdata[['m1_mode', 'm2_mode', 'm3_mode', 'm4_mode']].iloc[0]
@@ -17,13 +19,12 @@ def get_motor_status(fdata):
     return motor_status
 
 
-def get_data():
+def get_data(asdict=False):
+    print('Fetching Data...')
     data = []
     labels = np.array([])
-    pollingcycles = 3
-    timepointwidth = 100
 
-    mydir = "../../databin/bin2/"
+    mydir = "../../databin/set1ThursEve0307/"
 
     for file in os.listdir(mydir):
         if file.endswith(".csv"):
@@ -40,17 +41,19 @@ def get_data():
                 labels = np.append(labels, poll_label)
 
     data = np.asarray(data)
+    labels = labels.astype(int)
     print(labels)
-
+    print(type(labels))
     X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.25)
-    X_train = {'theta_error': X_train[:, 0, :],
-               'phi_error': X_train[:, 1, :],
-               'theta_error_dot': X_train[:, 2, :],
-               'phi_error_dot': X_train[:, 3, :]}
-    X_test = {'theta_error': X_test[:, 0, :],
-               'phi_error': X_test[:, 1, :],
-               'theta_error_dot': X_test[:, 2, :],
-               'phi_error_dot': X_test[:, 3, :]}
+    if asdict is True:
+        X_train = {'theta_error': X_train[:, 0, :],
+                   'phi_error': X_train[:, 1, :],
+                   'theta_error_dot': X_train[:, 2, :],
+                   'phi_error_dot': X_train[:, 3, :]}
+        X_test = {'theta_error': X_test[:, 0, :],
+                   'phi_error': X_test[:, 1, :],
+                   'theta_error_dot': X_test[:, 2, :],
+                   'phi_error_dot': X_test[:, 3, :]}
     return X_train, y_train, X_test, y_test
 
 
@@ -60,7 +63,7 @@ def train_input_fn(features, labels, batch_size=100):
     dataset = tf.data.Dataset.from_tensor_slices((features, labels))
 
     # Shuffle, repeat, and batch the examples.
-    dataset = dataset.shuffle(1000).repeat().batch(batch_size)
+    # dataset = dataset.shuffle(1000).repeat().batch(batch_size)
 
     # Return the dataset.
     return dataset
