@@ -137,7 +137,7 @@ class Controller_PID_Point2Point:
         # print(self.monitorbuffer)
 
     def get_monitorbuffer(self):
-        return self.monitorbuffer
+        return self.monitorbuffer, self.sim_clock
 
     def save_data(self, data, col_names):
         if not self.flush_override:

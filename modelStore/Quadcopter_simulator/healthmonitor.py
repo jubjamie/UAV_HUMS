@@ -2,26 +2,45 @@ import tensorflow as tf
 import numpy as np
 import threading
 import time
+import matplotlib.pyplot as plt
 
 
 class HealthMonitor:
-    def __init__(self, controller, datafeed):
+    def __init__(self, controller, datafeed, displaybool=True):
         self.thread_object = None
         self.run = True
         self.ctrl_obj = controller
         self.datafeed = datafeed
         self.model = None
+        self.displaybool = True
+        self.sim_clock_data = np.array([0])
+        self.health_data = np.array([0])
+        if self.displaybool is True:
+            self.health_fig, self.health_axs = plt.subplots()
+            self.health_axs.plot(self.sim_clock_data, self.health_data)
+            #plt.show()
+        self.labelmodes = ['healthy', 'damaged']
         # tf.keras.backend.clear_session()
         # self.load_model()
 
     def checkhealth(self):
-        x_input = self.datafeed().T
+        x_data, sim_time = self.datafeed()
+        x_input = x_data.T
         x_input = np.expand_dims(x_input, axis=0)
         # print(x_input.shape)
-        assert(x_input.shape == (1, 4, 10))
+        try:
+            assert(x_input.shape == (1, 4, 10))
+        except AssertionError:
+            return
         #tf.keras.backend.clear_session()
         predictions = self.model.predict([x_input])
-        print(np.argmax(predictions[0]))
+        print(str(np.argmax(predictions[0])))
+        if self.displaybool is True:
+            self.sim_clock_data = np.append(self.sim_clock_data, sim_time)
+            self.health_data = np.append(self.health_data, np.argmax(predictions[0]))
+            self.health_axs.clear()
+            self.health_axs.plot(self.sim_clock_data, self.health_data)
+
 
     def load_model(self):
         self.model = tf.keras.models.load_model('ML/NN1/models/nnt1.h5')
@@ -43,3 +62,5 @@ class HealthMonitor:
 
     def stop_thread(self):
         self.run = False
+        print('Flight status mode:')
+        print(np.around(np.mean(self.health_data)))
