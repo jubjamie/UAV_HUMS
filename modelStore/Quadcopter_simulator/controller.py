@@ -53,6 +53,10 @@ class Controller_PID_Point2Point:
         self.init_timestamp = time.strftime("%Y_%m_%d--%H-%M-%S", self.ts)
         self.save_path = save_path + '/' + self.init_timestamp + '.csv'
 
+        # ML buffer
+        self.monitorbufferlength = 10
+        self.monitorbuffer = np.zeros((self.monitorbufferlength, 4))
+
         # Sim time
         self.sim_clock = 0
         self.ready_for_goal = False
@@ -122,8 +126,18 @@ class Controller_PID_Point2Point:
                  'phi_error_dot', 'gamma_dot_error_dot', 'dest_theta', 'dest_phi', 'dest_gamma', 'm1_r', 'm2_r', 'm3_r',
                  'm4_r', 'm1_mode', 'm2_mode', 'm3_mode', 'm4_mode']
         self.save_data(save_data_cat, names)
+        self.update_monitorbuffer(np.array([theta_error, phi_error, self.angle_error_dots[0], self.angle_error_dots[1]]))
         # Actuate the motors
         self.actuate_motors(self.quad_identifier, M)
+
+    def update_monitorbuffer(self, data):
+        data = np.reshape(data, (1, 4))
+        self.monitorbuffer = np.vstack((self.monitorbuffer, data))
+        self.monitorbuffer = np.delete(self.monitorbuffer, 0, 0)
+        # print(self.monitorbuffer)
+
+    def get_monitorbuffer(self):
+        return self.monitorbuffer
 
     def save_data(self, data, col_names):
         if not self.flush_override:

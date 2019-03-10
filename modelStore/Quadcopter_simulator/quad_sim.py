@@ -3,6 +3,7 @@ import signal
 import sys
 import argparse
 import time
+import healthmonitor
 
 # Constants
 #  TIME_SCALING = 1.0 # Any positive number(Smaller is faster). 1.0->Real Time, 0.0->Run as fast as possible
@@ -20,10 +21,13 @@ def Single_Point2Point(GOALS, goal_length, YAWS, QUADCOPTER, CONTROLLER_PARAMETE
     if gui_mode is not 0:
         gui_object = gui.GUI(gui_mode=gui_mode, quads=QUADCOPTER, goals=GOALS, motor_modes=motor_modes)
     ctrl = controller.Controller_PID_Point2Point(quad.get_state, quad.get_time, quad.set_motor_speeds,
-                                                 params=CONTROLLER_PARAMETERS, quad_identifier='q1', motor_modes=motor_modes, save_path=save_path)
+                                                 params=CONTROLLER_PARAMETERS, quad_identifier='q1',
+                                                 motor_modes=motor_modes, save_path=save_path)
+    hmtr = healthmonitor.HealthMonitor(controller=ctrl, datafeed=ctrl.get_monitorbuffer)
     # Start the threads
     quad.start_thread(dt=QUAD_DYNAMICS_UPDATE, time_scaling=time_scale)
     ctrl.start_thread(update_rate=CONTROLLER_DYNAMICS_UPDATE, time_scaling=time_scale, goal_length=goal_length)
+    hmtr.start_thread()
     # Update the GUI while switching between destination positions
     print('Starting goals')
     inittime = quad.get_time()
@@ -43,6 +47,7 @@ def Single_Point2Point(GOALS, goal_length, YAWS, QUADCOPTER, CONTROLLER_PARAMETE
                 gui_object.quads['q1']['orientation'] = quad.get_orientation('q1')
                 gui_object.update()
     ctrl.flush_buffer()
+    hmtr.stop_thread()
     print('Goals complete.\nStopping threads')
     if gui_mode is not 0:
         gui_object.stop_gui()
