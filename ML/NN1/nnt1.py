@@ -9,7 +9,7 @@ ts = time.gmtime()
 X_train, y_train, X_test, y_test = datasource.get_data()
 
 model = keras.Sequential([
-    keras.layers.Flatten(input_shape=(4, datasource.timepointwidth)),
+    keras.layers.Flatten(input_shape=(2, datasource.timepointwidth)),
     keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
     keras.layers.Dropout(rate=0.3),
     keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
@@ -27,7 +27,7 @@ model.fit(X_train, y_train, batch_size=50, epochs=20, callbacks=[tb_cb])
 
 print('Training Complete - Saving Model')
 model.summary()
-model.save('models/nnt1.h5')
+model.save('models/nnt2.h5')
 
 test_loss, test_acc = model.evaluate(X_test, y_test)
 

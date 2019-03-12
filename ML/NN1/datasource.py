@@ -31,7 +31,7 @@ def get_data(asdict=False):
             filepath = os.path.join(mydir, file)
             flight_df = pd.read_csv(filepath, header=0, index_col=None)
             poll_label = get_motor_status(flight_df)
-            flight_df = flight_df[['theta_error', 'phi_error', 'theta_error_dot', 'phi_error_dot']]
+            flight_df = flight_df[['theta_error', 'phi_error']]
             flight_df_n = flight_df.to_numpy()
             timepoints = flight_df_n.shape[0]
             for j in range(pollingcycles):
@@ -47,13 +47,9 @@ def get_data(asdict=False):
     X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.25)
     if asdict is True:
         X_train = {'theta_error': X_train[:, 0, :],
-                   'phi_error': X_train[:, 1, :],
-                   'theta_error_dot': X_train[:, 2, :],
-                   'phi_error_dot': X_train[:, 3, :]}
+                   'phi_error': X_train[:, 1, :]}
         X_test = {'theta_error': X_test[:, 0, :],
-                   'phi_error': X_test[:, 1, :],
-                   'theta_error_dot': X_test[:, 2, :],
-                   'phi_error_dot': X_test[:, 3, :]}
+                   'phi_error': X_test[:, 1, :]}
     return X_train, y_train, X_test, y_test
 
 
