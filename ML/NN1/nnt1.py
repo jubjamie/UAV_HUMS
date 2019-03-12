@@ -9,7 +9,9 @@ ts = time.gmtime()
 X_train, y_train, X_test, y_test = datasource.get_data()
 
 model = keras.Sequential([
-    keras.layers.Flatten(input_shape=(2, datasource.timepointwidth)),
+    keras.layers.Flatten(input_shape=(6, datasource.timepointwidth)),
+    keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
+    keras.layers.Dropout(rate=0.3),
     keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
     keras.layers.Dropout(rate=0.3),
     keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
@@ -23,7 +25,7 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=
 #tb
 tb_cb = tf.keras.callbacks.TensorBoard(log_dir='./logs', write_graph=True, update_freq='epoch')
 
-model.fit(X_train, y_train, batch_size=50, epochs=20, callbacks=[tb_cb])
+model.fit(X_train, y_train, batch_size=64, epochs=128, shuffle=True, callbacks=[tb_cb])
 
 print('Training Complete - Saving Model')
 model.summary()
