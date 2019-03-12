@@ -1,4 +1,4 @@
-# UAV_HUMS
+# Machine Learnt HUMS for UAVS Simulator
 Final Year Project Repo starting the process for machine learnt based HUMS for UAVs. This repo aims to have a curdly implemented neural network monitoring controller error correction to detirmine the health of the motor/rotor sets onboard.
 
 ## Required Packages/Dependancies
@@ -35,6 +35,6 @@ This project comes with a flight data analysis tool, a bit like reading an aircr
 
 
 <p align="center">
-<img src="docs/data_analysis_1.jpg?raw=true" width="50%"/>
+<img src="docs/data_analysis_1.jpg?raw=true" width="80%"/>
 </p>
 
