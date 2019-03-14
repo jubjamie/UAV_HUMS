@@ -2,22 +2,28 @@ import tensorflow as tf
 from tensorflow import keras
 import datasource
 import time
+import numpy as np
 
 ts = time.gmtime()
 
 # get bulk data
 X_train, y_train, X_test, y_test = datasource.get_data()
+#expand for CNN
+X_train = np.expand_dims(X_train, axis=3)
+X_test = np.expand_dims(X_test, axis=3)
 
 model = keras.Sequential([
-    keras.layers.Flatten(input_shape=(6, datasource.timepointwidth)),
-    keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
+    keras.layers.Conv2D(128, (6, 5), 1, input_shape=(6, datasource.timepointwidth, 1), data_format='channels_last',
+                        padding='same', activation='relu'),
+    keras.layers.Conv2D(128, (6, 4), 1, data_format='channels_last', padding='same', activation='relu'),
+    keras.layers.Conv2D(128, (6, 3), 1, data_format='channels_last', padding='same', activation='relu'),
+    keras.layers.Flatten(),
+    keras.layers.Dense(64, activation=tf.nn.relu, use_bias=True),
     keras.layers.Dropout(rate=0.3),
-    keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
+    keras.layers.Dense(64, activation=tf.nn.relu, use_bias=True),
     keras.layers.Dropout(rate=0.3),
-    keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
-    keras.layers.Dropout(rate=0.3),
-    keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
     keras.layers.Dense(2, activation=tf.nn.softmax)
+
 ])
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
@@ -25,11 +31,11 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=
 #tb
 tb_cb = tf.keras.callbacks.TensorBoard(log_dir='./logs', write_graph=True, update_freq='epoch')
 
-model.fit(X_train, y_train, batch_size=64, epochs=128, shuffle=True, callbacks=[tb_cb])
+model.fit(X_train, y_train, batch_size=64, epochs=32, shuffle=True, callbacks=[tb_cb])
 
 print('Training Complete - Saving Model')
 model.summary()
-model.save('models/nnt2.h5')
+model.save('models/cnnt3.h5')
 
 test_loss, test_acc = model.evaluate(X_test, y_test)
 
