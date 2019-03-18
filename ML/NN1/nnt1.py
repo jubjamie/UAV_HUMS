@@ -4,6 +4,7 @@ import datasource
 import time
 from sklearn.metrics import confusion_matrix
 import numpy as np
+import matplotlib.pyplot as plt
 
 ts = time.gmtime()
 
@@ -25,7 +26,7 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=
 #tb
 tb_cb = tf.keras.callbacks.TensorBoard(log_dir='./logs', write_graph=True, update_freq='epoch')
 
-model.fit(X_train, y_train, batch_size=64, epochs=128, shuffle=True, callbacks=[tb_cb])
+model.fit(X_train, y_train, batch_size=64, epochs=64, shuffle=True, callbacks=[tb_cb])
 
 print('Training Complete - Saving Model')
 model.summary()
@@ -40,4 +41,22 @@ predictions = model.predict(X_test)
 print('Predicts: ' + str(predictions[0]) + ' <-> Is actually: ' + str(y_test[0]))
 
 cm = confusion_matrix(y_test, np.argmax(predictions, axis=1))
+cm_raw = cm
+cm = np.true_divide(cm, cm.sum(axis=1, keepdims=True))
 print(cm)
+labels = ['Healthy', 'Failure']
+fig = plt.figure()
+ax = fig.add_subplot(111)
+plt.set_cmap('winter')
+cax = ax.matshow(cm)
+plt.title('Confusion matrix of the classifier')
+fig.colorbar(cax)
+ax.set_xticklabels([''] + labels)
+ax.set_yticklabels([''] + labels)
+for xx in range(cm.shape[0]):
+    for yy in range(cm.shape[1]):
+        text = ax.text(xx, yy, "{0:.2%}\n({1})".format(cm[xx, yy], cm_raw[xx, yy]), ha="center", va="center", color="w")
+        text.set_bbox(dict(facecolor='black', alpha=0.4, edgecolor='black'))
+plt.xlabel('Predicted')
+plt.ylabel('True')
+plt.show()
