@@ -19,29 +19,38 @@ def get_motor_status(fdata):
     return motor_status
 
 
-def get_data(asdict=False):
-    print('Fetching Data...')
-    data = []
-    labels = np.array([])
-
+def get_data(asdict=False, newdata=False):
     mydir = "../../databin/set3FriEve0308/"
+    if newdata:
+        print('Fetching New Data...')
+        data = []
+        labels = np.array([])
 
-    for file in os.listdir(mydir):
-        if file.endswith(".csv"):
-            filepath = os.path.join(mydir, file)
-            flight_df = pd.read_csv(filepath, header=0, index_col=None)
-            poll_label = get_motor_status(flight_df)
-            flight_df = flight_df[['theta_error', 'phi_error', 'theta_error_dot', 'phi_error_dot', 'theta_dot', 'phi_dot']]
-            flight_df_n = flight_df.to_numpy()
-            timepoints = flight_df_n.shape[0]
-            for j in range(pollingcycles):
-                pollpoint = random.randint(0, timepoints-timepointwidth-1)
-                flight_df_n_poll = flight_df_n[pollpoint:pollpoint+timepointwidth, :].T
-                data.append(flight_df_n_poll)
-                labels = np.append(labels, poll_label)
 
-    data = np.asarray(data)
-    labels = labels.astype(int)
+        for file in os.listdir(mydir):
+            if file.endswith(".csv"):
+                filepath = os.path.join(mydir, file)
+                flight_df = pd.read_csv(filepath, header=0, index_col=None)
+                poll_label = get_motor_status(flight_df)
+                flight_df = flight_df[['theta_error', 'phi_error', 'theta_error_dot', 'phi_error_dot', 'theta_dot', 'phi_dot']]
+                flight_df_n = flight_df.to_numpy()
+                timepoints = flight_df_n.shape[0]
+                for j in range(pollingcycles):
+                    pollpoint = random.randint(0, timepoints-timepointwidth-1)
+                    flight_df_n_poll = flight_df_n[pollpoint:pollpoint+timepointwidth, :].T
+                    data.append(flight_df_n_poll)
+                    labels = np.append(labels, poll_label)
+
+        data = np.asarray(data)
+        labels = labels.astype(int)
+        # Save new data
+        np.save(mydir + 'data.npy', data)
+        np.save(mydir + 'labels.npy', labels)
+    else:
+        print('Loading data from file...')
+        data = np.load(mydir + 'data.npy')
+        labels = np.load(mydir + 'labels.npy')
+
     print(labels)
     print(type(labels))
     X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.25)
@@ -51,9 +60,9 @@ def get_data(asdict=False):
                    'theta_error_dot': X_train[:, 2, :],
                    'phi_error_dot': X_train[:, 3, :]}
         X_test = {'theta_error': X_test[:, 0, :],
-                   'phi_error': X_test[:, 1, :],
-                   'theta_error_dot': X_test[:, 2, :],
-                   'phi_error_dot': X_test[:, 3, :]}
+                  'phi_error': X_test[:, 1, :],
+                  'theta_error_dot': X_test[:, 2, :],
+                  'phi_error_dot': X_test[:, 3, :]}
     return X_train, y_train, X_test, y_test
 
 
