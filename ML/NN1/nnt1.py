@@ -2,6 +2,8 @@ import tensorflow as tf
 from tensorflow import keras
 import datasource
 import time
+from sklearn.metrics import confusion_matrix
+import numpy as np
 
 ts = time.gmtime()
 
@@ -39,3 +41,5 @@ predictions = model.predict(X_test)
 
 print('Predicts: ' + str(predictions[0]) + ' <-> Is actually: ' + str(y_test[0]))
 
+cm = confusion_matrix(y_test, np.argmax(predictions, axis=1))
+print(cm)
