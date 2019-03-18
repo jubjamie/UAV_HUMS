@@ -16,7 +16,7 @@ model = keras.Sequential([
     keras.layers.Conv2D(128, (6, 5), 1, input_shape=(6, datasource.timepointwidth, 1), data_format='channels_last',
                         padding='same', activation='relu'),
     keras.layers.Conv2D(128, (6, 4), 1, data_format='channels_last', padding='same', activation='relu'),
-    keras.layers.Conv2D(128, (6, 3), 1, data_format='channels_last', padding='same', activation='relu'),
+    keras.layers.Conv2D(128, (6, 1), 1, data_format='channels_last', padding='same', activation='relu'),
     keras.layers.Flatten(),
     keras.layers.Dense(64, activation=tf.nn.relu, use_bias=True),
     keras.layers.Dropout(rate=0.3),
@@ -31,7 +31,7 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=
 #tb
 tb_cb = tf.keras.callbacks.TensorBoard(log_dir='./logs', write_graph=True, update_freq='epoch')
 
-model.fit(X_train, y_train, batch_size=64, epochs=32, shuffle=True, callbacks=[tb_cb])
+model.fit(X_train, y_train, batch_size=256, epochs=64, shuffle=True, callbacks=[tb_cb])
 
 print('Training Complete - Saving Model')
 model.summary()

@@ -44,6 +44,14 @@ def get_data(asdict=False):
     labels = labels.astype(int)
     print(labels)
     print(type(labels))
+
+    # Normalise data for CNNs
+    for k in range(0, 5):
+        data[:, k] = np.clip(data[:, k], a_min=np.percentile(data[:, k], 0.5), a_max=np.percentile(data[:, k], 99.5))  # Clip out anomolies
+        data[:, k] = np.divide(data[:, k], np.max(np.abs(data[:, k])))
+
+    data = np.clip(data, a_max=1, a_min=-1)
+    data = (data + 1)/2.0
     X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.25)
     if asdict is True:
         X_train = {'theta_error': X_train[:, 0, :],
