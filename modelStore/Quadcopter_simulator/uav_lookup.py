@@ -6,7 +6,7 @@ modelist = list(motordata.alldata.keys())
 # Lookup system for failed components
 
 
-def lookup_rpm(rpm, mid, mode='healthy'):
+def lookup_rpm(rpm, mid=None, mode='healthy'):
     """
     Chooses a motor rotor profile depending on the motor id and/or base mode. Interps the values from emp data
     :param rpm: motor speed request from controller in rpm
