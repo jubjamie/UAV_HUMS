@@ -20,8 +20,8 @@ def get_motor_status(fdata):
 
 
 def get_data(asdict=False, newdata=False):
-    mydir = ['../../databin/set1healthy/', '../../databin/set1mf2/', '../../databin/set1rsf1c/',
-             '../../databin/set1rsf4/']
+    mydir = ['../../databin/set2healthy/', '../../databin/set2mf2/', '../../databin/set2rsf1c/',
+             '../../databin/set2rsf4/']
     if newdata:
         print('Fetching New Data...\nSearching Folders:')
         data = []
@@ -99,6 +99,3 @@ def eval_input_fn(features, labels, batch_size):
 
     # Return the dataset.
     return dataset
-
-
-get_data(newdata=True)
