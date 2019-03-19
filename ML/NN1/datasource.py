@@ -50,8 +50,8 @@ def get_data(asdict=False, newdata=False):
         np.save(mydir[0] + 'labels.npy', labels)
     else:
         print('Loading data from file...')
-        data = np.load(mydir + 'data.npy')
-        labels = np.load(mydir + 'labels.npy')
+        data = np.load(mydir[0] + 'data.npy')
+        labels = np.load(mydir[0] + 'labels.npy')
 
     print(labels)
     print(type(labels))
