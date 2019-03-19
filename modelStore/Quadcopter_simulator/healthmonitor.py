@@ -64,3 +64,5 @@ class HealthMonitor:
         self.run = False
         print('Flight status mode:')
         print(np.around(np.mean(self.health_data)))
+        print(np.count_nonzero(self.health_data == 0))
+        print(np.count_nonzero(self.health_data == 1))
