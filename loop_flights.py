@@ -8,10 +8,10 @@ GOALS = [(0, 0, 3), (2, -2, 3), (-1.5, 1.5, 3)]
 newSim = sim.Sim()
 newSim.set_params(goals=GOALS, goal_time=6)
 newSim.ask_save_destination()
-for k in range(0, 3):
+for k in range(0, 4):
     h_string = ['healthy', 'healthy', 'healthy', 'healthy']
-    h_string[k] = 'rsf1c'
-    for i in range(2):
+    h_string[k] = 'healthy'
+    for i in range(100):
         print("Starting Simulation " + str(i+1))
         GOALS = simutilities.randomgoals(3)
         newSim.reset_goals_to(GOALS)
