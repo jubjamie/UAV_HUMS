@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 class HealthMonitor:
     def __init__(self, controller, datafeed, displaybool=True):
         self.thread_object = None
+        self.thread_object_scope = None
         self.run = True
         self.ctrl_obj = controller
         self.datafeed = datafeed
@@ -15,16 +16,23 @@ class HealthMonitor:
         self.displaybool = True
         self.sim_clock_data = np.array([0])
         self.health_data = np.array([0])
+        self.predict_confidence = np.array([0])
         if self.displaybool is True:
-            self.health_fig, self.health_axs = plt.subplots()
+            self.health_fig, self.health_axs = plt.subplots(ncols=1, nrows=1)
+            self.health_axs.set_xlabel('Simulation Time')
+            self.health_axs.set_ylabel('Classifier Output')
             self.health_axs.plot(self.sim_clock_data, self.health_data)
+            plt.pause(0.000000000000001)
             #plt.show()
+
         self.labelmodes = ['healthy', 'damaged']
+        self.sim_time = []
+        self.predictions = []
         # tf.keras.backend.clear_session()
         # self.load_model()
 
     def checkhealth(self):
-        x_data, sim_time = self.datafeed()
+        x_data, self.sim_time = self.datafeed()
         x_input = x_data.T
         x_input = np.expand_dims(x_input, axis=0)
         # print(x_input.shape)
@@ -33,14 +41,18 @@ class HealthMonitor:
         except AssertionError:
             return
         #tf.keras.backend.clear_session()
-        predictions = self.model.predict([x_input])
-        print(str(np.argmax(predictions[0])))
+        self.predictions = self.model.predict([x_input])
+        #print(str(np.argmax(self.predictions[0])))
+        print(str(self.predictions[0]))
         if self.displaybool is True:
-            self.sim_clock_data = np.append(self.sim_clock_data, sim_time)
-            self.health_data = np.append(self.health_data, np.argmax(predictions[0]))
-            self.health_axs.clear()
-            self.health_axs.plot(self.sim_clock_data, self.health_data)
+            self.sim_clock_data = np.append(self.sim_clock_data, self.sim_time)
+            self.health_data = np.append(self.health_data, np.argmax(self.predictions[0]))
+            self.predict_confidence = np.append(self.predict_confidence, self.predictions[0][0])
+            #self.health_axs.clear()
+            #self.health_axs.plot(self.sim_clock_data, self.health_data)
 
+    def hook_data(self):
+        return self.sim_time, self.health_data
 
     def load_model(self):
         self.model = tf.keras.models.load_model('ML/NN1/models/nnt1.h5')
@@ -53,12 +65,23 @@ class HealthMonitor:
         time.sleep(1)
         while self.run is True:
             # Loop through inference
-            time.sleep(0.05)
+            time.sleep(0.2)
             self.checkhealth()
+
+    def scope_plotter(self):
+        print('Updating graph')
+        self.health_axs.clear()
+        self.health_axs.plot(self.sim_clock_data[:self.health_data.shape[0]], self.health_data)
+        self.health_axs.plot(self.sim_clock_data, self.predict_confidence[:self.sim_clock_data.shape[0]], 'r')
+        plt.pause(0.0000001)
 
     def start_thread(self):
         self.thread_object = threading.Thread(target=self.thread_run)
         self.thread_object.start()
+        """
+        if self.displaybool is True:
+            self.thread_object_scope = threading.Thread(target=self.scope_plotter())
+            self.thread_object_scope.start()"""
 
     def stop_thread(self):
         self.run = False

@@ -46,6 +46,7 @@ def Single_Point2Point(GOALS, goal_length, YAWS, QUADCOPTER, CONTROLLER_PARAMETE
                 gui_object.quads['q1']['position'] = quad.get_position('q1')
                 gui_object.quads['q1']['orientation'] = quad.get_orientation('q1')
                 gui_object.update()
+            hmtr.scope_plotter()
     ctrl.flush_buffer()
     hmtr.stop_thread()
     print('Goals complete.\nStopping threads')
