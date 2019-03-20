@@ -59,4 +59,5 @@ for xx in range(cm.shape[0]):
         text.set_bbox(dict(facecolor='black', alpha=0.4, edgecolor='black'))
 plt.xlabel('Predicted')
 plt.ylabel('True')
+plt.savefig('confidenceMatrix1.png')
 plt.show()
