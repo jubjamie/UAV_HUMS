@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 ts = time.gmtime()
 
 # get bulk data
-X_train, y_train, X_test, y_test = datasource.get_data(newdata=True)
+X_train, y_train, X_test, y_test = datasource.get_data()
 
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(6, datasource.timepointwidth)),
