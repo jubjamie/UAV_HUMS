@@ -28,6 +28,9 @@ class HealthMonitor:
         self.labelmodes = ['healthy', 'damaged']
         self.sim_time = []
         self.predictions = []
+        self.newstatus = 0
+        self.status_list = ['Healthy', 'Failure']
+        self.laststatus = 1
         # tf.keras.backend.clear_session()
         # self.load_model()
 
@@ -42,12 +45,20 @@ class HealthMonitor:
             return
         #tf.keras.backend.clear_session()
         self.predictions = self.model.predict([x_input])
-        print(str(np.argmax(self.predictions[0])))
+        #print(str(np.argmax(self.predictions[0])))
         #print(str(self.predictions[0]))
 
         self.sim_clock_data = np.append(self.sim_clock_data, self.sim_time)
         self.health_data = np.append(self.health_data, np.argmax(self.predictions[0]))
         self.predict_confidence = np.append(self.predict_confidence, self.predictions[0][0])
+        self.newstatus = np.around(np.mean(self.health_data[-5:-1]))
+        if self.newstatus == 1:
+            warnstatus = ' - WARN' if np.mean(self.predict_confidence[-5:-1]) < 0.75 else ' - ALERT'
+        else:
+            warnstatus = ''
+        if self.newstatus != self.laststatus:
+            print('\r' + self.status_list[int(self.newstatus)] + warnstatus)
+        self.laststatus = self.newstatus
         #self.health_axs.clear()
         #self.health_axs.plot(self.sim_clock_data, self.health_data)
 
@@ -65,7 +76,7 @@ class HealthMonitor:
         time.sleep(1)
         while self.run is True:
             # Loop through inference
-            time.sleep(0.2)
+            time.sleep(0.1)
             self.checkhealth()
 
     def scope_plotter(self):
