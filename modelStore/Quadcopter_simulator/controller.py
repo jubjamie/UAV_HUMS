@@ -54,8 +54,8 @@ class Controller_PID_Point2Point:
         self.save_path = save_path + '/' + self.init_timestamp + '.csv'
 
         # ML buffer
-        self.monitorbufferlength = 10
-        self.monitorbuffer = np.zeros((self.monitorbufferlength, 4))
+        self.monitorbufferlength = 15
+        self.monitorbuffer = np.zeros((self.monitorbufferlength, 6))
 
         # Sim time
         self.sim_clock = 0
@@ -126,12 +126,13 @@ class Controller_PID_Point2Point:
                  'phi_error_dot', 'gamma_dot_error_dot', 'dest_theta', 'dest_phi', 'dest_gamma', 'm1_r', 'm2_r', 'm3_r',
                  'm4_r', 'm1_mode', 'm2_mode', 'm3_mode', 'm4_mode']
         self.save_data(save_data_cat, names)
-        self.update_monitorbuffer(np.array([theta_error, phi_error, self.angle_error_dots[0], self.angle_error_dots[1]]))
+        self.update_monitorbuffer(np.array([theta_error, phi_error, self.angle_error_dots[0], self.angle_error_dots[1],
+                                           theta_dot, phi_dot]))
         # Actuate the motors
         self.actuate_motors(self.quad_identifier, M)
 
     def update_monitorbuffer(self, data):
-        data = np.reshape(data, (1, 4))
+        data = np.reshape(data, (1, 6))
         self.monitorbuffer = np.vstack((self.monitorbuffer, data))
         self.monitorbuffer = np.delete(self.monitorbuffer, 0, 0)
         # print(self.monitorbuffer)

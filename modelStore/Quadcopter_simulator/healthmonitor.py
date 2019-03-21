@@ -13,7 +13,7 @@ class HealthMonitor:
         self.ctrl_obj = controller
         self.datafeed = datafeed
         self.model = None
-        self.displaybool = True
+        self.displaybool = displaybool
         self.sim_clock_data = np.array([0])
         self.health_data = np.array([0])
         self.predict_confidence = np.array([0])
@@ -37,25 +37,25 @@ class HealthMonitor:
         x_input = np.expand_dims(x_input, axis=0)
         # print(x_input.shape)
         try:
-            assert(x_input.shape == (1, 4, 10))
+            assert(x_input.shape == (1, 6, 15))
         except AssertionError:
             return
         #tf.keras.backend.clear_session()
         self.predictions = self.model.predict([x_input])
-        #print(str(np.argmax(self.predictions[0])))
-        print(str(self.predictions[0]))
-        if self.displaybool is True:
-            self.sim_clock_data = np.append(self.sim_clock_data, self.sim_time)
-            self.health_data = np.append(self.health_data, np.argmax(self.predictions[0]))
-            self.predict_confidence = np.append(self.predict_confidence, self.predictions[0][0])
-            #self.health_axs.clear()
-            #self.health_axs.plot(self.sim_clock_data, self.health_data)
+        print(str(np.argmax(self.predictions[0])))
+        #print(str(self.predictions[0]))
+
+        self.sim_clock_data = np.append(self.sim_clock_data, self.sim_time)
+        self.health_data = np.append(self.health_data, np.argmax(self.predictions[0]))
+        self.predict_confidence = np.append(self.predict_confidence, self.predictions[0][0])
+        #self.health_axs.clear()
+        #self.health_axs.plot(self.sim_clock_data, self.health_data)
 
     def hook_data(self):
         return self.sim_time, self.health_data
 
     def load_model(self):
-        self.model = tf.keras.models.load_model('ML/NN1/models/nnt1.h5')
+        self.model = tf.keras.models.load_model('ML/NN1/models/nnt2.h5')
         self.model._make_predict_function()
         self.model.summary()
 
@@ -69,7 +69,7 @@ class HealthMonitor:
             self.checkhealth()
 
     def scope_plotter(self):
-        print('Updating graph')
+        #print('Updating graph')
         self.health_axs.clear()
         self.health_axs.plot(self.sim_clock_data[:self.health_data.shape[0]], self.health_data)
         self.health_axs.plot(self.sim_clock_data, self.predict_confidence[:self.sim_clock_data.shape[0]], 'r')
