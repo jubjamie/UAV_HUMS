@@ -37,7 +37,7 @@ class HealthMonitor:
         x_input = np.expand_dims(x_input, axis=0)
         # print(x_input.shape)
         try:
-            assert(x_input.shape == (1, 6, 15))
+            assert(x_input.shape == (1, 6, 20))
         except AssertionError:
             return
         #tf.keras.backend.clear_session()

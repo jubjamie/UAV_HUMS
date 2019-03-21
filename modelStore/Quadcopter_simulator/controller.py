@@ -54,7 +54,7 @@ class Controller_PID_Point2Point:
         self.save_path = save_path + '/' + self.init_timestamp + '.csv'
 
         # ML buffer
-        self.monitorbufferlength = 15
+        self.monitorbufferlength = 20
         self.monitorbuffer = np.zeros((self.monitorbufferlength, 6))
 
         # Sim time
