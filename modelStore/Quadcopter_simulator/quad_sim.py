@@ -1,9 +1,8 @@
-from modelStore.Quadcopter_simulator import quadcopter, gui, controller
+from modelStore.Quadcopter_simulator import quadcopter, gui, controller, healthmonitor
 import signal
 import sys
 import argparse
 import time
-import healthmonitor
 
 # Constants
 #  TIME_SCALING = 1.0 # Any positive number(Smaller is faster). 1.0->Real Time, 0.0->Run as fast as possible
