@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 
 class HealthMonitor:
-    def __init__(self, controller, datafeed, displaybool=True):
+    def __init__(self, controller, datafeed, use_lstm=False, displaybool=True):
         self.thread_object = None
         self.thread_object_scope = None
         self.run = True
@@ -25,6 +25,7 @@ class HealthMonitor:
             plt.pause(0.000000000000001)
             #plt.show()
 
+        self.use_lstm = use_lstm
         self.labelmodes = ['healthy', 'damaged']
         self.sim_time = []
         self.predictions = []
@@ -39,10 +40,17 @@ class HealthMonitor:
         x_input = x_data.T
         x_input = np.expand_dims(x_input, axis=0)
         # print(x_input.shape)
-        try:
-            assert(x_input.shape == (1, 6, 20))
-        except AssertionError:
-            return
+        if self.use_lstm:
+            x_input = np.transpose(x_input, (0, 2, 1))
+            try:
+                assert(x_input.shape == (1, 20, 6))
+            except AssertionError:
+                return
+        else:
+            try:
+                assert(x_input.shape == (1, 6, 20))
+            except AssertionError:
+                return
         #tf.keras.backend.clear_session()
         self.predictions = self.model.predict([x_input])
         #print(str(np.argmax(self.predictions[0])))
@@ -66,7 +74,10 @@ class HealthMonitor:
         return self.sim_time, self.health_data
 
     def load_model(self):
-        self.model = tf.keras.models.load_model('ML/NN1/models/nnt2.h5')
+        if self.use_lstm:
+            self.model = tf.keras.models.load_model('ML/LSTM1/models/lstm_class1.h5')
+        else:
+            self.model = tf.keras.models.load_model('ML/NN1/models/nnt2.h5')
         self.model._make_predict_function()
         self.model.summary()
 
@@ -76,7 +87,7 @@ class HealthMonitor:
         time.sleep(1)
         while self.run is True:
             # Loop through inference
-            time.sleep(0.1)
+            time.sleep(0.25)
             self.checkhealth()
 
     def scope_plotter(self):

@@ -23,7 +23,7 @@ def Single_Point2Point(GOALS, goal_length, YAWS, QUADCOPTER, CONTROLLER_PARAMETE
     ctrl = controller.Controller_PID_Point2Point(quad.get_state, quad.get_time, quad.set_motor_speeds,
                                                  params=CONTROLLER_PARAMETERS, quad_identifier='q1',
                                                  motor_modes=motor_modes, save_path=save_path)
-    hmtr = healthmonitor.HealthMonitor(controller=ctrl, datafeed=ctrl.get_monitorbuffer, displaybool=monitorscope)
+    hmtr = healthmonitor.HealthMonitor(controller=ctrl, datafeed=ctrl.get_monitorbuffer, use_lstm=True, displaybool=monitorscope)
     # Start the threads
     quad.start_thread(dt=QUAD_DYNAMICS_UPDATE, time_scaling=time_scale)
     ctrl.start_thread(update_rate=CONTROLLER_DYNAMICS_UPDATE, time_scaling=time_scale, goal_length=goal_length)
