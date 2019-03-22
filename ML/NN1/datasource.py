@@ -73,7 +73,7 @@ def lstm_transpose(fourbitdatagen):
     xt1, yt1, xt2, yt2 = fourbitdatagen
     xt1 = np.transpose(xt1, (0, 2, 1))
     xt2 = np.transpose(xt2, (0, 2, 1))
-    return xt1, xt2
+    return xt1, yt1, xt2, yt2
 
 
 def train_input_fn(features, labels, batch_size=100):
