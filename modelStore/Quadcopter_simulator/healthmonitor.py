@@ -32,6 +32,7 @@ class HealthMonitor:
         self.newstatus = 0
         self.status_list = ['Healthy', 'Failure']
         self.laststatus = 1
+        self.last_warnstatus = 0
         # tf.keras.backend.clear_session()
         # self.load_model()
 
@@ -59,14 +60,15 @@ class HealthMonitor:
         self.sim_clock_data = np.append(self.sim_clock_data, self.sim_time)
         self.health_data = np.append(self.health_data, np.argmax(self.predictions[0]))
         self.predict_confidence = np.append(self.predict_confidence, self.predictions[0][0])
-        self.newstatus = np.around(np.mean(self.health_data[-5:-1]))
+        self.newstatus = np.around(np.mean(self.health_data[-10:-1]))
         if self.newstatus == 1:
-            warnstatus = ' - WARN' if np.mean(self.predict_confidence[-5:-1]) < 0.75 else ' - ALERT'
+            warnstatus = ' - WARN' if np.mean(self.predict_confidence[-10:-1]) > 0.75 else ' - ALERT'
         else:
             warnstatus = ''
-        if self.newstatus != self.laststatus:
+        if self.newstatus != self.laststatus or warnstatus != self.last_warnstatus:
             print('\r' + self.status_list[int(self.newstatus)] + warnstatus)
         self.laststatus = self.newstatus
+        self.last_warnstatus = warnstatus
         #self.health_axs.clear()
         #self.health_axs.plot(self.sim_clock_data, self.health_data)
 
@@ -87,7 +89,7 @@ class HealthMonitor:
         time.sleep(1)
         while self.run is True:
             # Loop through inference
-            time.sleep(0.25)
+            time.sleep(0.1)
             self.checkhealth()
 
     def scope_plotter(self):
