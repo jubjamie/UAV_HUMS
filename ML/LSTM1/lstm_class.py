@@ -15,7 +15,7 @@ print(X_test.shape)
 print(y_test.shape)
 
 model = keras.Sequential([
-    keras.layers.LSTM(input_shape=(X_train.shape[1], X_train.shape[2]), units=20, return_sequences=True),
+    keras.layers.LSTM(input_shape=(X_train.shape[1], X_train.shape[2]), units=X_train.shape[1], return_sequences=True),
     keras.layers.Dropout(rate=0.2),
     keras.layers.LSTM(64),
     keras.layers.Dense(classes, activation='softmax')
