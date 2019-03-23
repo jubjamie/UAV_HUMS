@@ -6,18 +6,19 @@ import matplotlib.pyplot as plt
 
 # get bulk data
 X_train, y_train_b, X_test, y_test_b = datasource.lstm_transpose(datasource.get_data())
-y_train = keras.utils.to_categorical(y_train_b, 2)
-y_test = keras.utils.to_categorical(y_test_b, 2)
+classes = 2
+y_train = keras.utils.to_categorical(y_train_b, classes)
+y_test = keras.utils.to_categorical(y_test_b, classes)
 print(X_train.shape)
 print(y_train.shape)
 print(X_test.shape)
 print(y_test.shape)
 
 model = keras.Sequential([
-    keras.layers.LSTM(input_shape=(20, 6), units=20, return_sequences=True),
+    keras.layers.LSTM(input_shape=(X_train.shape[1], X_train.shape[2]), units=20, return_sequences=True),
     keras.layers.Dropout(rate=0.2),
     keras.layers.LSTM(64),
-    keras.layers.Dense(2, activation='softmax')
+    keras.layers.Dense(classes, activation='softmax')
 ])
 
 model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=['accuracy'])
