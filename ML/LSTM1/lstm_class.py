@@ -17,16 +17,16 @@ print(y_test.shape)
 model = keras.Sequential([
     keras.layers.LSTM(input_shape=(X_train.shape[1], X_train.shape[2]), units=X_train.shape[1], return_sequences=True),
     keras.layers.Dropout(rate=0.2),
-    keras.layers.LSTM(64),
+    keras.layers.LSTM(8),
     keras.layers.Dense(classes, activation='softmax')
 ])
 
 model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=['accuracy'])
 
-model.fit(X_train, y_train, batch_size=512, epochs=16, shuffle=True)
+model.fit(X_train, y_train, batch_size=128, epochs=16, shuffle=True)
 model.summary()
 model.save('models/lstm_class1.h5')
-test_loss, test_acc = model.evaluate(X_test, y_test, batch_size=512)
+test_loss, test_acc = model.evaluate(X_test, y_test, batch_size=128)
 
 print('Test Loss:', test_loss)
 print('Test Accuracy:', test_acc)
