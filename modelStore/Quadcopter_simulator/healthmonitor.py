@@ -44,12 +44,12 @@ class HealthMonitor:
         if self.use_lstm:
             x_input = np.transpose(x_input, (0, 2, 1))
             try:
-                assert(x_input.shape == (1, 20, 6))
+                assert(x_input.shape == (1, 10, 6))
             except AssertionError:
                 return
         else:
             try:
-                assert(x_input.shape == (1, 6, 20))
+                assert(x_input.shape == (1, 6, 10))
             except AssertionError:
                 return
         #tf.keras.backend.clear_session()
@@ -76,12 +76,13 @@ class HealthMonitor:
         return self.sim_time, self.health_data
 
     def load_model(self):
-        if self.use_lstm:
-            self.model = tf.keras.models.load_model('ML/LSTM1/models/lstm_class1.h5')
-        else:
-            self.model = tf.keras.models.load_model('ML/NN1/models/nnt2.h5')
-        self.model._make_predict_function()
-        self.model.summary()
+        with tf.device('/cpu:0'):
+            if self.use_lstm:
+                self.model = tf.keras.models.load_model('ML/LSTM1/models/lstm_class_10_3x16.h5')
+            else:
+                self.model = tf.keras.models.load_model('ML/NN1/models/nnt2.h5')
+            self.model._make_predict_function()
+            self.model.summary()
 
     def thread_run(self):
         print('Health Monitor Starting...')
