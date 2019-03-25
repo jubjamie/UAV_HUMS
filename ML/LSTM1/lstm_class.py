@@ -36,8 +36,8 @@ plt.plot(history.history['val_acc'])
 plt.title('Model Accuracy')
 plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
-plt.legend(['Train', 'Validation'], loc='lower left')
-
+plt.legend(['Train', 'Validation'], loc='lower right')
+plt.savefig('train_acc.png')
 
 # Run tests
 test_loss, test_acc = model.evaluate(X_test, y_test, batch_size=16)
