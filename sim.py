@@ -4,6 +4,7 @@ from modelStore.Quadcopter_simulator import quadcopter
 import random
 from tkinter import filedialog
 from tkinter import *
+import numpy as np
 
 
 class Sim:
@@ -41,6 +42,8 @@ class Sim:
             self.GOALS = goals
         if yaws is not None:
             self.YAWS = yaws
+        else:
+            self.YAWS = np.zeros(len(self.GOALS))
         if quad_params is not None:
             self.QUADCOPTER = quad_params
         if ctlprms is not None:
