@@ -17,6 +17,7 @@ class HealthMonitor:
         self.sim_clock_data = np.array([0])
         self.health_data = np.array([0])
         self.predict_confidence = np.array([0])
+        self.status_log = np.array([])
         if self.displaybool is True:
             self.health_fig, self.health_axs = plt.subplots(ncols=1, nrows=1)
             self.health_axs.set_xlabel('Simulation Time')
@@ -61,6 +62,7 @@ class HealthMonitor:
         self.health_data = np.append(self.health_data, np.argmax(self.predictions[0]))
         self.predict_confidence = np.append(self.predict_confidence, self.predictions[0][0])
         self.newstatus = np.around(np.mean(self.health_data[-10:-1]))
+        self.status_log = np.append(self.status_log, self.newstatus)
         if self.newstatus == 1:
             warnstatus = ' - WARN' if np.mean(self.predict_confidence[-10:-1]) > 0.75 else ' - ALERT'
         else:
@@ -110,7 +112,10 @@ class HealthMonitor:
 
     def stop_thread(self):
         self.run = False
-        print('Flight status mode:')
+        print('Flight status mode - Individual:')
         print(np.around(np.mean(self.health_data)))
         print(np.count_nonzero(self.health_data == 0))
         print(np.count_nonzero(self.health_data == 1))
+        print('\nFlight status mode - Grouped:')
+        print(np.count_nonzero(self.status_log == 0))
+        print(np.count_nonzero(self.status_log == 1))
