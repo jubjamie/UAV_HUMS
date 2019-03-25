@@ -61,10 +61,10 @@ class HealthMonitor:
         self.sim_clock_data = np.append(self.sim_clock_data, self.sim_time)
         self.health_data = np.append(self.health_data, np.argmax(self.predictions[0]))
         self.predict_confidence = np.append(self.predict_confidence, self.predictions[0][0])
-        self.newstatus = np.around(np.mean(self.health_data[-10:-1]))
+        self.newstatus = np.around(np.mean(self.health_data[-5:-1]))
         self.status_log = np.append(self.status_log, self.newstatus)
         if self.newstatus == 1:
-            warnstatus = ' - WARN' if np.mean(self.predict_confidence[-10:-1]) > 0.75 else ' - ALERT'
+            warnstatus = ' - WARN' if np.mean(self.predict_confidence[-5:-1]) > 0.75 else ' - ALERT'
         else:
             warnstatus = ''
         if self.newstatus != self.laststatus or warnstatus != self.last_warnstatus:
@@ -80,7 +80,7 @@ class HealthMonitor:
     def load_model(self):
         with tf.device('/cpu:0'):
             if self.use_lstm:
-                self.model = tf.keras.models.load_model('ML/LSTM1/models/lstm_class_10_3x16.h5')
+                self.model = tf.keras.models.load_model('ML/LSTM1/models/lstm_class_10_2x16.h5')
             else:
                 self.model = tf.keras.models.load_model('ML/NN1/models/nnt2.h5')
             self.model._make_predict_function()
