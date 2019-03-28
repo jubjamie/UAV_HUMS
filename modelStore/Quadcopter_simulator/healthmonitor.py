@@ -80,7 +80,7 @@ class HealthMonitor:
     def load_model(self):
         with tf.device('/cpu:0'):
             if self.use_lstm:
-                self.model = tf.keras.models.load_model('ML/LSTM1/models/lstm_class_10_2x16.h5')
+                self.model = tf.keras.models.load_model('ML/LSTM1/models/lstm_class_10_3x32.h5')
             else:
                 self.model = tf.keras.models.load_model('ML/NN1/models/nnt2.h5')
             self.model._make_predict_function()
