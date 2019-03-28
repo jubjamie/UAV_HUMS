@@ -5,8 +5,9 @@ from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 
 # get bulk data
-X_train, y_train_b, X_test, y_test_b = datasource.lstm_transpose(datasource.get_data())
-classes = 2
+X_train, y_train_b, X_test, y_test_b, enc_classes = datasource.get_data(classtype='multiclass')
+X_train, y_train_b, X_test, y_test_b = datasource.lstm_transpose(X_train, y_train_b, X_test, y_test_b)
+classes = len(enc_classes)
 y_train = keras.utils.to_categorical(y_train_b, classes)
 y_test = keras.utils.to_categorical(y_test_b, classes)
 print(X_train.shape)
@@ -17,9 +18,7 @@ print(y_test.shape)
 model = keras.Sequential([
     keras.layers.LSTM(input_shape=(X_train.shape[1], X_train.shape[2]), units=X_train.shape[1], return_sequences=True),
     keras.layers.Dropout(rate=0.2),
-    keras.layers.LSTM(32, return_sequences=True),
-    keras.layers.Dropout(rate=0.2),
-    keras.layers.LSTM(32),
+    keras.layers.LSTM(16),
     keras.layers.Dense(classes, activation='softmax')
 ])
 
@@ -27,7 +26,7 @@ model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=['accur
 
 history = model.fit(X_train, y_train, batch_size=16, epochs=16, shuffle=True, validation_split=0.15)
 model.summary()
-model.save('models/lstm_class_' + str(X_train.shape[1]) + '_3x32.h5')
+model.save('models/lstm_' + str(classes) + '_classes_' + str(X_train.shape[1]) + '_2x16.h5')
 
 # summarize history for accuracy
 plt.figure()
@@ -53,7 +52,7 @@ cm = confusion_matrix(y_test_b, np.argmax(predictions, axis=1))
 cm_raw = cm
 cm = np.true_divide(cm, cm.sum(axis=1, keepdims=True))
 print(cm)
-labels = ['Healthy', 'Failure']
+labels = enc_classes
 fig = plt.figure()
 ax = fig.add_subplot(111)
 plt.set_cmap('winter')

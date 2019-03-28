@@ -4,22 +4,46 @@ import os
 import numpy as np
 import random
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from modelStore.Quadcopter_simulator import motordata
 
 pollingcycles = 30
 timepointwidth = 10
 
-def get_motor_status(fdata):
+
+def get_motor_status(fdata, classtype='binary', labelas='int'):
+
     motor_modes = fdata[['m1_mode', 'm2_mode', 'm3_mode', 'm4_mode']].iloc[0]
     motor_extract = [motor_modes['m1_mode'], motor_modes['m2_mode'], motor_modes['m3_mode'],
                      motor_modes['m4_mode']]
     if all(i == 'healthy' for i in motor_extract):
-        motor_status = 0
+            motor_status = 'healthy' if labelas == 'string' else 0
     else:
-        motor_status = 1
+        if classtype == 'binary':
+            if labelas == 'string':
+                motor_status = 'failure'
+            else:
+                motor_status = 1
+        elif classtype == 'multiclass':
+            motor_status = 'healthy' if labelas == 'string' else 0  # Give healthy unless accepted damage mode found
+            for modes in motor_extract:
+                if modes in [*motordata.alldata][1:]:
+                    #  If mode is a mode in the accepted list that is not healthy
+                    motor_status = modes if labelas == 'string' else [*motordata.alldata].index(modes)
+                    break
+        else:
+            raise ValueError('Class type not recognised for labelling motor status ( get_motor_status() )')
+
     return motor_status
 
 
-def get_data(asdict=False, newdata=False):
+def get_data(asdict=False, newdata=False, classtype='binary', labelas=None, return_class_ref=True):
+    if labelas is None:
+        if classtype == 'multiclass':
+            labelas = 'string'
+        else:
+            labelas = 'int'
+
     mydir = ['../../databin/set2healthy/', '../../databin/set2mf2/', '../../databin/set2rsf1c/',
              '../../databin/set2rsf4/']
     if newdata:
@@ -33,7 +57,7 @@ def get_data(asdict=False, newdata=False):
                 if file.endswith(".csv"):
                     filepath = os.path.join(dirx, file)
                     flight_df = pd.read_csv(filepath, header=0, index_col=None)
-                    poll_label = get_motor_status(flight_df)
+                    poll_label = get_motor_status(flight_df, classtype, labelas)
                     flight_df = flight_df[['theta_error', 'phi_error', 'theta_error_dot', 'phi_error_dot', 'theta_dot', 'phi_dot']]
                     flight_df_n = flight_df.to_numpy()
                     timepoints = flight_df_n.shape[0]
@@ -44,14 +68,26 @@ def get_data(asdict=False, newdata=False):
                         labels = np.append(labels, poll_label)
 
         data = np.asarray(data)
-        labels = labels.astype(int)
+        if labelas == 'int':
+            labels = labels.astype(int)
+        else:
+            labels = labels.astype(str)
         # Save new data
-        np.save(mydir[0] + 'data.npy', data)
-        np.save(mydir[0] + 'labels.npy', labels)
+        np.save(mydir[0] + '_' + classtype + '_data.npy', data)
+        np.save(mydir[0] + '_' + classtype + '_labels.npy', labels)
     else:
         print('Loading data from file...')
-        data = np.load(mydir[0] + 'data.npy')
-        labels = np.load(mydir[0] + 'labels.npy')
+        data = np.load(mydir[0] + '_' + classtype + '_data.npy')
+        labels = np.load(mydir[0] + '_' + classtype + '_labels.npy')
+
+    if classtype == 'multiclass':
+        # Encode labels
+        le = LabelEncoder()
+        le.fit(labels)
+        classref = list(le.classes_)
+        labels = le.transform(labels)
+    else:
+        classref = ['healthy', 'failure']
 
     print(labels)
     print(type(labels))
@@ -66,11 +102,14 @@ def get_data(asdict=False, newdata=False):
                   'phi_error': X_test[:, 1, :],
                   'theta_error_dot': X_test[:, 2, :],
                   'phi_error_dot': X_test[:, 3, :]}
-    return X_train, y_train, X_test, y_test
+
+    if return_class_ref:
+        return X_train, y_train, X_test, y_test, classref
+    else:
+        return X_train, y_train, X_test, y_test
 
 
-def lstm_transpose(fourbitdatagen):
-    xt1, yt1, xt2, yt2 = fourbitdatagen
+def lstm_transpose(xt1, yt1, xt2, yt2):
     xt1 = np.transpose(xt1, (0, 2, 1))
     xt2 = np.transpose(xt2, (0, 2, 1))
     return xt1, yt1, xt2, yt2
