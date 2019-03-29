@@ -4,6 +4,7 @@ from modelStore.Quadcopter_simulator import quadcopter
 import random
 from tkinter import filedialog
 from tkinter import *
+import numpy as np
 
 
 class Sim:
@@ -31,6 +32,7 @@ class Sim:
         self.gui_mode = 1
         self.see_motor_gui = False
         self.see_gui = True
+        self.see_monitor_scope = False
         self.time_scale = 1.0
         self.quad = 0
         self.save_path = None
@@ -40,6 +42,8 @@ class Sim:
             self.GOALS = goals
         if yaws is not None:
             self.YAWS = yaws
+        else:
+            self.YAWS = np.zeros(len(self.GOALS))
         if quad_params is not None:
             self.QUADCOPTER = quad_params
         if ctlprms is not None:
@@ -54,10 +58,10 @@ class Sim:
 
     def set_failure_mode(self, setting='defined', mode='healthy'):
         if setting == 'random':
-            self.motor_modes = [random.choices(uav_lookup.modelist, weights=[70, 7, 7, 7, 9])[0],
-                                random.choices(uav_lookup.modelist, weights=[70, 7, 7, 7, 9])[0],
-                                random.choices(uav_lookup.modelist, weights=[70, 7, 7, 7, 9])[0],
-                                random.choices(uav_lookup.modelist, weights=[70, 7, 7, 7, 9])[0]]
+            self.motor_modes = [random.choices(uav_lookup.modelist, weights=[70, 6, 6, 6, 6, 6])[0],
+                                random.choices(uav_lookup.modelist, weights=[70, 6, 6, 6, 6, 6])[0],
+                                random.choices(uav_lookup.modelist, weights=[70, 6, 6, 6, 6, 6])[0],
+                                random.choices(uav_lookup.modelist, weights=[70, 6, 6, 6, 6, 6])[0]]
         elif setting == 'defined':
             if type(mode) is not list:
                 if mode in uav_lookup.modelist:
@@ -97,4 +101,5 @@ class Sim:
         else:
             self.gui_mode = 0
 
-        quad_sim.Single_Point2Point(self.GOALS, self.goal_time, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS, self.motor_modes, self.gui_mode, self.time_scale, self.quad, self.save_path)
+        quad_sim.Single_Point2Point(self.GOALS, self.goal_time, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS,
+                                    self.motor_modes, self.gui_mode, self.time_scale, self.quad, self.save_path, self.see_monitor_scope)
