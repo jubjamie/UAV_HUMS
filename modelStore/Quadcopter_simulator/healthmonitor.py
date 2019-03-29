@@ -3,10 +3,12 @@ import numpy as np
 import threading
 import time
 import matplotlib.pyplot as plt
+from modelStore.Quadcopter_simulator import motordata
+from scipy.stats import mode
 
 
 class HealthMonitor:
-    def __init__(self, controller, datafeed, use_lstm=False, displaybool=True):
+    def __init__(self, controller, datafeed, use_lstm=False, displaybool=True, classmode='binary'):
         self.thread_object = None
         self.thread_object_scope = None
         self.run = True
@@ -34,6 +36,7 @@ class HealthMonitor:
         self.status_list = ['Healthy', 'Failure']
         self.laststatus = 1
         self.last_warnstatus = 0
+        self.classmode = classmode
         # tf.keras.backend.clear_session()
         # self.load_model()
 
@@ -61,14 +64,17 @@ class HealthMonitor:
         self.sim_clock_data = np.append(self.sim_clock_data, self.sim_time)
         self.health_data = np.append(self.health_data, np.argmax(self.predictions[0]))
         self.predict_confidence = np.append(self.predict_confidence, self.predictions[0][0])
-        self.newstatus = np.around(np.mean(self.health_data[-5:-1]))
+        self.newstatus = 0 if mode(self.health_data[-10:-1])[0][0] == 0 else 1
         self.status_log = np.append(self.status_log, self.newstatus)
         if self.newstatus == 1:
-            warnstatus = ' - WARN' if np.mean(self.predict_confidence[-5:-1]) > 0.75 else ' - ALERT'
+            warnstatus = ' - WARN' if np.mean(self.predict_confidence[-5:-1]) > 0.35 else ' - ALERT'
+            damage_mode = ' - Motor' if mode(self.health_data[-10:-1])[0][0] == 1 else ' - Rotor'
         else:
             warnstatus = ''
+            damage_mode = ''
+        damage_mode = damage_mode if self.classmode == 'multi' else ''
         if self.newstatus != self.laststatus or warnstatus != self.last_warnstatus:
-            print('\r' + self.status_list[int(self.newstatus)] + warnstatus)
+            print('\r' + self.status_list[int(self.newstatus)] + warnstatus + damage_mode)
         self.laststatus = self.newstatus
         self.last_warnstatus = warnstatus
         #self.health_axs.clear()
@@ -83,6 +89,7 @@ class HealthMonitor:
                 self.model = tf.keras.models.load_model('ML/LSTM1/models/lstm_class_10_3x32.h5')
             else:
                 self.model = tf.keras.models.load_model('ML/NN1/models/nnt2.h5')
+            self.classmode = 'binary'
             self.model._make_predict_function()
             self.model.summary()
 
@@ -115,7 +122,7 @@ class HealthMonitor:
         print('Flight status mode - Individual:')
         print(np.around(np.mean(self.health_data)))
         print(np.count_nonzero(self.health_data == 0))
-        print(np.count_nonzero(self.health_data == 1))
+        print(np.count_nonzero(self.health_data > 0))
         print('\nFlight status mode - Grouped:')
         print(np.count_nonzero(self.status_log == 0))
         print(np.count_nonzero(self.status_log == 1))
