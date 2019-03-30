@@ -33,6 +33,7 @@ class Sim:
         self.see_motor_gui = False
         self.see_gui = True
         self.see_monitor_scope = False
+        self.use_lstm = False
         self.time_scale = 1.0
         self.quad = 0
         self.save_path = None
@@ -102,4 +103,4 @@ class Sim:
             self.gui_mode = 0
 
         quad_sim.Single_Point2Point(self.GOALS, self.goal_time, self.YAWS, self.QUADCOPTER, self.CONTROLLER_PARAMETERS,
-                                    self.motor_modes, self.gui_mode, self.time_scale, self.quad, self.save_path, self.see_monitor_scope)
+                                    self.motor_modes, self.gui_mode, self.time_scale, self.quad, self.save_path, self.use_lstm, self.see_monitor_scope)

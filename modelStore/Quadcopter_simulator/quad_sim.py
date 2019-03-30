@@ -12,7 +12,7 @@ run = True
 
 
 def Single_Point2Point(GOALS, goal_length, YAWS, QUADCOPTER, CONTROLLER_PARAMETERS, motor_modes, gui_mode, time_scale,
-                       quad, save_path, monitorscope):
+                       quad, save_path, use_lstm, monitorscope):
     # Catch Ctrl+C to stop threads
     gui_object = []
     signal.signal(signal.SIGINT, signal_handler)
