@@ -39,6 +39,7 @@ class HealthMonitor:
         self.classmode = classmode
         # tf.keras.backend.clear_session()
         # self.load_model()
+        self.ready = False
 
     def checkhealth(self):
         x_data, self.sim_time = self.datafeed()
@@ -67,7 +68,7 @@ class HealthMonitor:
         self.newstatus = 0 if mode(self.health_data[-10:-1])[0][0] == 0 else 1
         self.status_log = np.append(self.status_log, self.newstatus)
         if self.newstatus == 1:
-            warnstatus = ' - WARN' if np.mean(self.predict_confidence[-5:-1]) > 0.35 else ' - ALERT'
+            warnstatus = ' - WARN' if np.mean(self.predict_confidence[-10:-1]) > 0.35 else ' - ALERT'
             damage_mode = ' - Motor' if mode(self.health_data[-10:-1])[0][0] == 1 else ' - Rotor'
         else:
             warnstatus = ''
@@ -96,7 +97,9 @@ class HealthMonitor:
     def thread_run(self):
         print('Health Monitor Starting...')
         self.load_model()
-        time.sleep(1)
+        time.sleep(0.4)
+        self.ready = True
+        time.sleep(0.4)
         while self.run is True:
             # Loop through inference
             time.sleep(0.1)

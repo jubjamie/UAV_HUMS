@@ -25,9 +25,11 @@ def Single_Point2Point(GOALS, goal_length, YAWS, QUADCOPTER, CONTROLLER_PARAMETE
                                                  motor_modes=motor_modes, save_path=save_path)
     hmtr = healthmonitor.HealthMonitor(controller=ctrl, datafeed=ctrl.get_monitorbuffer, use_lstm=True, displaybool=monitorscope)
     # Start the threads
+    hmtr.start_thread()
+    while hmtr.ready is False:
+        time.sleep(0.1)
     quad.start_thread(dt=QUAD_DYNAMICS_UPDATE, time_scaling=time_scale)
     ctrl.start_thread(update_rate=CONTROLLER_DYNAMICS_UPDATE, time_scaling=time_scale, goal_length=goal_length)
-    hmtr.start_thread()
     # Update the GUI while switching between destination positions
     print('Starting goals')
     inittime = quad.get_time()
