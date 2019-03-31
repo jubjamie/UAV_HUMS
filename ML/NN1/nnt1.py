@@ -9,15 +9,14 @@ import matplotlib.pyplot as plt
 ts = time.gmtime()
 
 # get bulk data
-X_train, y_train, X_test, y_test = datasource.get_data()
+X_train, y_train, X_test, y_test, enc_classes = datasource.get_data(newdata=False)
 
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(6, datasource.timepointwidth)),
-    keras.layers.Dense(16, activation=tf.nn.relu, use_bias=True),
-    keras.layers.Dropout(rate=0.3),
-    keras.layers.Dense(16, activation=tf.nn.relu, use_bias=True),
-    keras.layers.Dropout(rate=0.3),
-    #keras.layers.Dense(10, activation=tf.nn.relu, use_bias=True),
+    keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
+    keras.layers.Dropout(rate=0.2),
+    keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
+    keras.layers.Dropout(rate=0.2),
     keras.layers.Dense(2, activation=tf.nn.softmax)
 ])
 
@@ -26,11 +25,21 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=
 #tb
 tb_cb = tf.keras.callbacks.TensorBoard(log_dir='./logs', write_graph=True, update_freq='epoch')
 
-model.fit(X_train, y_train, batch_size=64, epochs=64, shuffle=True, callbacks=[tb_cb])
+history = model.fit(X_train, y_train, batch_size=16, epochs=16, shuffle=True, validation_split=0.15)
 
 print('Training Complete - Saving Model')
 model.summary()
-model.save('models/nnt2.h5')
+model.save('models/nnt2_2x64.h5')
+
+# summarize history for accuracy
+plt.figure()
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.title('Model Accuracy')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='lower right')
+plt.savefig('train_acc.png')
 
 test_loss, test_acc = model.evaluate(X_test, y_test)
 
