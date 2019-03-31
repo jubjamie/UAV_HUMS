@@ -40,6 +40,7 @@ class HealthMonitor:
         # tf.keras.backend.clear_session()
         # self.load_model()
         self.ready = False
+        self.timepoint_average = 5
 
     def checkhealth(self):
         x_data, self.sim_time = self.datafeed()
@@ -65,11 +66,11 @@ class HealthMonitor:
         self.sim_clock_data = np.append(self.sim_clock_data, self.sim_time)
         self.health_data = np.append(self.health_data, np.argmax(self.predictions[0]))
         self.predict_confidence = np.append(self.predict_confidence, self.predictions[0][0])
-        self.newstatus = 0 if mode(self.health_data[-10:-1])[0][0] == 0 else 1
+        self.newstatus = 0 if mode(self.health_data[-self.timepoint_average:-1])[0][0] == 0 else 1
         self.status_log = np.append(self.status_log, self.newstatus)
         if self.newstatus == 1:
-            warnstatus = ' - WARN' if np.mean(self.predict_confidence[-10:-1]) > 0.35 else ' - ALERT'
-            damage_mode = ' - Motor' if mode(self.health_data[-10:-1])[0][0] == 1 else ' - Rotor'
+            warnstatus = ' - WARN' if np.mean(self.predict_confidence[-self.timepoint_average:-1]) > 0.35 else ' - ALERT'
+            damage_mode = ' - Motor' if mode(self.health_data[-self.timepoint_average:-1])[0][0] == 1 else ' - Rotor'
         else:
             warnstatus = ''
             damage_mode = ''
@@ -87,7 +88,7 @@ class HealthMonitor:
     def load_model(self):
         with tf.device('/cpu:0'):
             if self.use_lstm:
-                self.model = tf.keras.models.load_model('ML/LSTM1/models/lstm_class_10_3x32.h5')
+                self.model = tf.keras.models.load_model('ML/LSTM1/models/lstm_class_10_2x32(32e).h5')
             else:
                 self.model = tf.keras.models.load_model('ML/NN1/models/nnt2.h5')
             self.classmode = 'binary'
