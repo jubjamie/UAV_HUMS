@@ -13,9 +13,11 @@ X_train, y_train, X_test, y_test, enc_classes = datasource.get_data(newdata=Fals
 
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(6, datasource.timepointwidth)),
-    keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
+    keras.layers.Dense(64, activation=tf.nn.relu, use_bias=True),
     keras.layers.Dropout(rate=0.2),
-    keras.layers.Dense(128, activation=tf.nn.relu, use_bias=True),
+    keras.layers.Dense(64, activation=tf.nn.relu, use_bias=True),
+    keras.layers.Dropout(rate=0.2),
+    keras.layers.Dense(64, activation=tf.nn.relu, use_bias=True),
     keras.layers.Dropout(rate=0.2),
     keras.layers.Dense(2, activation=tf.nn.softmax)
 ])
@@ -29,7 +31,7 @@ history = model.fit(X_train, y_train, batch_size=16, epochs=16, shuffle=True, va
 
 print('Training Complete - Saving Model')
 model.summary()
-model.save('models/nnt2_2x64.h5')
+model.save('models/nnt2_3x64.h5')
 
 # summarize history for accuracy
 plt.figure()

@@ -90,7 +90,7 @@ class HealthMonitor:
             if self.use_lstm:
                 self.model = tf.keras.models.load_model('ML/LSTM1/models/lstm_class_10_2x32(32e).h5')
             else:
-                self.model = tf.keras.models.load_model('ML/NN1/models/nnt2.h5')
+                self.model = tf.keras.models.load_model('ML/NN1/models/nnt2_3x64.h5')
             self.classmode = 'binary'
             self.model._make_predict_function()
             self.model.summary()

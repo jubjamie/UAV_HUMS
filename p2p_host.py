@@ -7,10 +7,10 @@ GOALS = simutilities.randomgoals(3)
 
 newSim = sim.Sim()
 newSim.set_params(goals=GOALS, goal_time=15)
-newSim.set_failure_mode(setting='defined')
+newSim.set_failure_mode(setting='random')
 newSim.see_gui = False
 newSim.see_motor_gui = False
 newSim.time_scale = 0.5
-newSim.use_lstm = True
+newSim.use_lstm = False
 newSim.ask_save_destination()
 newSim.run_sim()
