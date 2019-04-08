@@ -64,7 +64,8 @@ rsf2 = np.array(
      [14264, 233, 20.5],
      [14751, 254, 24.6],
      [15417, 268, 24.8],
-     [27000, 500, 26]])  # Double small tip
+     [24000, 475, 56],
+     [27000, 616, 26]])  # Double small tip
 
 rsf4 = np.array(
     [[9246, 33.5, 4],
@@ -75,8 +76,8 @@ rsf4 = np.array(
      [15452, 174.6, 69.9],
      [16826, 211.5, 47],
      [16840, 221, 54.3],
-     [24000, 526, 56],
-     [27000, 738, 56]])  # Double 2.8
+     [24000, 370, 56],
+     [27000, 460, 56]])  # Double 2.8
 
 alldata = {'healthy': healthy, 'mf1': motorFailure1, 'rsf1c': rsf1c, 'rsf2': rsf2, 'rsf4': rsf4, 'mf2': motorFailure2}
 
