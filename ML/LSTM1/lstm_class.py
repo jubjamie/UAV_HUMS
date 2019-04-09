@@ -5,7 +5,7 @@ from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 
 # get bulk data
-X_train, y_train_b, X_test, y_test_b, enc_classes = datasource.get_data(classtype='multiclass')
+X_train, y_train_b, X_test, y_test_b, enc_classes = datasource.get_data(classtype='binary')
 X_train, y_train_b, X_test, y_test_b = datasource.lstm_transpose(X_train, y_train_b, X_test, y_test_b)
 classes = len(enc_classes)
 y_train = keras.utils.to_categorical(y_train_b, classes)
