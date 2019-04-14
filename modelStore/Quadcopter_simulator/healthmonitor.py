@@ -3,7 +3,6 @@ import numpy as np
 import threading
 import time
 import matplotlib.pyplot as plt
-from modelStore.Quadcopter_simulator import motordata
 from scipy.stats import mode
 
 

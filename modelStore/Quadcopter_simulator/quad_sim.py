@@ -1,4 +1,4 @@
-from modelStore.Quadcopter_simulator import quadcopter, gui, controller, healthmonitor
+from modelStore.Quadcopter_simulator import gui, controller, healthmonitor
 import signal
 import sys
 import argparse
