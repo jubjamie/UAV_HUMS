@@ -11,29 +11,50 @@ CONTROLLER_DYNAMICS_UPDATE = 0.005  # seconds
 run = True
 
 
-def Single_Point2Point(GOALS, goal_length, YAWS, QUADCOPTER, CONTROLLER_PARAMETERS, motor_modes, gui_mode, time_scale,
+def Single_Point2Point(goals, goal_length, yaws, quadcopter, controller_params, motor_modes, gui_mode, time_scale,
                        quad, save_path, use_lstm, monitorscope):
+    """
+    Main simulation thread manageer
+    :param goals: Goals to loop through
+    :param goal_length: Approx how long to spend before changing to next goal
+    :param yaws: Yaw targets
+    :param quadcopter: Quadcopter parameters
+    :param controller_params: Controller parameters to pass to controller thread
+    :param motor_modes: Modes for each motor
+    :param gui_mode: Whether to show certain GUI elements
+    :param time_scale: Time scale to run the simulation error at (0-1)
+    :param quad: Quadcopter physics model to run
+    :param save_path: Where to save flight data to
+    :param use_lstm: Whether the healthmonitor should use LSTMs
+    :param monitorscope: Where to display health monitor classification scope (Broken)
+    :return: Simulation run
+    """
     # Catch Ctrl+C to stop threads
     gui_object = []
     signal.signal(signal.SIGINT, signal_handler)
     # Make objects for quadcopter, gui and controller
-    # quad = quadcopter.Quadcopter(QUADCOPTER, motor_modes)
+    # Load GUI worker if needed
     if gui_mode is not 0:
-        gui_object = gui.GUI(gui_mode=gui_mode, quads=QUADCOPTER, goals=GOALS, motor_modes=motor_modes)
+        gui_object = gui.GUI(gui_mode=gui_mode, quads=quadcopter, goals=goals, motor_modes=motor_modes)
+    # Init controller object
     ctrl = controller.Controller_PID_Point2Point(quad.get_state, quad.get_time, quad.set_motor_speeds,
-                                                 params=CONTROLLER_PARAMETERS, quad_identifier='q1',
+                                                 params=controller_params, quad_identifier='q1',
                                                  motor_modes=motor_modes, save_path=save_path)
+    # Init healthmonitor object
     hmtr = healthmonitor.HealthMonitor(controller=ctrl, datafeed=ctrl.get_monitorbuffer, use_lstm=use_lstm, displaybool=monitorscope)
-    # Start the threads
+    # Start the healthmonitor thread to load model into memory
     hmtr.start_thread()
+    # Wait for healthmonitor to report ready to continue simulation.
     while hmtr.ready is False:
         time.sleep(0.1)
+    # Start the quadcopter physics model and the controleer threads
     quad.start_thread(dt=QUAD_DYNAMICS_UPDATE, time_scaling=time_scale)
     ctrl.start_thread(update_rate=CONTROLLER_DYNAMICS_UPDATE, time_scaling=time_scale, goal_length=goal_length)
     # Update the GUI while switching between destination positions
     print('Starting goals')
     inittime = quad.get_time()
-    for goal, y in zip(GOALS, YAWS):
+    # Loop through goals and update GUI and other elements as required.
+    for goal, y in zip(goals, yaws):
         print(['Goal: ' + str(goal)])
         if gui_mode is not 0:
             gui_object.goal_plot_activated(goal)
@@ -50,6 +71,7 @@ def Single_Point2Point(GOALS, goal_length, YAWS, QUADCOPTER, CONTROLLER_PARAMETE
                 gui_object.update()
             if monitorscope is True:
                 hmtr.scope_plotter()
+    # Once complete flush flight data buffer to file.
     ctrl.flush_buffer()
     hmtr.stop_thread()
     print('Goals complete.\nStopping threads')
@@ -59,33 +81,8 @@ def Single_Point2Point(GOALS, goal_length, YAWS, QUADCOPTER, CONTROLLER_PARAMETE
     ctrl.stop_thread()
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Quadcopter Simulator")
-    parser.add_argument("--sim", help='single_p2p, multi_p2p or single_velocity', default='single_p2p')
-    parser.add_argument("--time_scale", type=float, default=-1.0,
-                        help='Time scaling factor. 0.0:fastest,1.0:realtime,>1:slow, ex: --time_scale 0.1')
-    parser.add_argument("--quad_update_time", type=float, default=0.0,
-                        help='delta time for quadcopter dynamics update(seconds), ex: --quad_update_time 0.002')
-    parser.add_argument("--controller_update_time", type=float, default=0.0,
-                        help='delta time for controller update(seconds), ex: --controller_update_time 0.005')
-    return parser.parse_args()
-
-
 def signal_handler(signal, frame):
     global run
     run = False
     print('Stopping')
     sys.exit(0)
-
-
-if __name__ == "__main__":
-    args = parse_args()
-    """
-    TIME_SCALING = args.time_scale if args.time_scale >= 0 else TIME_SCALING = 1.0
-    QUAD_DYNAMICS_UPDATE = args.quad_update_time if args.quad_update_time > 0 else QUAD_DYNAMICS_UPDATE = 0.002
-    CONTROLLER_DYNAMICS_UPDATE = args.controller_update_time if args.controller_update_time > 0 \
-        else CONTROLLER_DYNAMICS_UPDATE = 0.005
-    """
-    if args.sim == 'single_p2p':
-        #  Single_Point2Point()
-        pass

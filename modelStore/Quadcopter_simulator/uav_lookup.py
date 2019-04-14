@@ -11,12 +11,13 @@ def lookup_rpm(rpm, mid=None, mode='healthy'):
     Chooses a motor rotor profile depending on the motor id and/or base mode. Interps the values from emp data
     :param rpm: motor speed request from controller in rpm
     :param mode: The base motor mode
-    :param mid: The motor id for choosing correct profile at later stage
+    :param mid: The motor id for choosing correct profile at later stage (Not Used for now)
     :return: return thrust in N
     """
     mode = parsemode(mode)
     newthrust_mean = np.interp(rpm, motordata.alldata[mode][:, 0], motordata.alldata[mode][:, 1])
     newthrust_std = np.interp(rpm, motordata.alldata[mode][:, 0], motordata.alldata[mode][:, 2])
+    # Generate random sample via normal distribution
     newthrust_g = np.clip(np.random.normal(newthrust_mean, newthrust_std), a_min=0, a_max=None)
     newthrust_n = newthrust_g * 9.81 / 1000
     return newthrust_n

@@ -6,8 +6,10 @@ import matplotlib.pyplot as plt
 
 # get bulk data
 X_train, y_train_b, X_test, y_test_b, enc_classes = datasource.get_data(classtype='binary')
+# Transpose for LSTMS
 X_train, y_train_b, X_test, y_test_b = datasource.lstm_transpose(X_train, y_train_b, X_test, y_test_b)
 classes = len(enc_classes)
+# Convert to one-hot
 y_train = keras.utils.to_categorical(y_train_b, classes)
 y_test = keras.utils.to_categorical(y_test_b, classes)
 print(X_train.shape)
@@ -15,6 +17,7 @@ print(y_train.shape)
 print(X_test.shape)
 print(y_test.shape)
 
+# Build model using Keras Layers
 model = keras.Sequential([
     keras.layers.LSTM(input_shape=(X_train.shape[1], X_train.shape[2]), units=X_train.shape[1], return_sequences=True),
     keras.layers.Dropout(rate=0.2),
@@ -50,6 +53,7 @@ predictions = model.predict(X_test)
 
 print('Predicts: ' + str(predictions[0]) + ' <-> Is actually: ' + str(y_test[0]))
 
+# Create confusion matrix
 cm = confusion_matrix(y_test_b, np.argmax(predictions, axis=1))
 cm_raw = cm
 cm = np.true_divide(cm, cm.sum(axis=1, keepdims=True))

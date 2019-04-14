@@ -24,7 +24,7 @@ class Propeller:
         :return: Method.
         """
         self.speed = speed
-
+        # Use motor look up data for generating thrust
         self.thrust = uav_lookup.lookup_rpm(self.speed, mid, motor_mode)
         if self.thrust_unit == 'Kg':
             self.thrust = self.thrust * 0.101972

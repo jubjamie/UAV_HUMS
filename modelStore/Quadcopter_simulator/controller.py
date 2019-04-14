@@ -8,6 +8,7 @@ import pandas as pd
 
 class Controller_PID_Point2Point:
     def __init__(self, get_state, get_time, actuate_motors, params, quad_identifier, motor_modes, save_path):
+        # Initialise
         self.quad_identifier = quad_identifier
         self.actuate_motors = actuate_motors
         self.motor_modes = motor_modes
@@ -133,15 +134,28 @@ class Controller_PID_Point2Point:
         self.actuate_motors(self.quad_identifier, M)
 
     def update_monitorbuffer(self, data):
+        """
+        Updates the buffer for the healthmonitor to read from
+        """
         data = np.reshape(data, (1, 6))
         self.monitorbuffer = np.vstack((self.monitorbuffer, data))
         self.monitorbuffer = np.delete(self.monitorbuffer, 0, 0)
         # print(self.monitorbuffer)
 
     def get_monitorbuffer(self):
+        """
+        Cross-thread hook for the monitor buffer
+        :return: Monitor buffer and sim clock data
+        """
         return self.monitorbuffer, self.sim_clock
 
     def save_data(self, data, col_names):
+        """
+        Saves flight data to a buffer and routinely flush to buffer
+        :param data: Data to save
+        :param col_names: Headers
+        :return: None
+        """
         if not self.flush_override:
             if self.step_ignore < self.step_ignore_limit:
                 # Skip
@@ -179,6 +193,10 @@ class Controller_PID_Point2Point:
             pass
 
     def flush_buffer(self):
+        """
+        Flushes the buffer at the end of a simulation
+        :return: None
+        """
         self.flush_override = True
         print('Flushing buffer to file')
         if self.header_tracker is False:

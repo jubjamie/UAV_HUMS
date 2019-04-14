@@ -66,6 +66,12 @@ class GUI:
                                                    antialiased=False)
 
     def thrust_plot(self, thrust_values_in, rpm_values_in):
+        """
+        Update the new thrust plotter
+        :param thrust_values_in: New thrust values
+        :param rpm_values_in: New RPM values
+        :return: Update figure
+        """
         self.thrust_ax.clear()
         self.thrust_mids = [1, 2, 3, 4]
         self.thrust_ax.set_ylim(0, 13)

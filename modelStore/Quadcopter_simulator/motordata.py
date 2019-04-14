@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-# Data:
-# As rpm/thrust pair (grams)
+"""
+Data for thrust profiles as [RPM, Thrust (gram force), Standard Deviation]
+"""
 healthy = np.array(
     [[7520, 90, 0],
      [11470, 204, 0],
@@ -79,6 +80,7 @@ rsf4 = np.array(
      [24000, 370, 56],
      [27000, 460, 56]])  # Double 2.8
 
+# Dictionary for easy access to data by failure code.
 alldata = {'healthy': healthy, 'mf1': motorFailure1, 'rsf1c': rsf1c, 'rsf2': rsf2, 'rsf4': rsf4, 'mf2': motorFailure2}
 
 
@@ -96,12 +98,14 @@ def plotprofile(mode):
 
 
 def noise(mean, std):
+    """
+    Generate sample noise output.
+    :param mean: Mean
+    :param std: Standard Deviation
+    :return: Graph
+    """
     noise_y = np.random.normal(mean, std, 2000)
     noise_x = np.linspace(1, 2000, num=2000)
     plt.figure()
     plt.plot(noise_x, noise_y)
     plt.show()
-
-#plotprofile('rsf4')
-
-# noise(170,0)

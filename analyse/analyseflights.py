@@ -10,15 +10,24 @@ root = Tk()
 
 
 def pickFile():
+    """
+    Opens file picker to choose flight csv to load in.
+    :return: Path to file
+    """
     filename = filedialog.askopenfilename(initialdir="databin/", title="Select file",
                                           filetypes=(("csv Flight Data", "*.csv"), ("all files", "*.*")))
     return filename
 
 
+# Picks file and loads into memory
 flight_df = pd.read_csv(pickFile(), header=0, index_col=None)
 
 
 def getfp():
+    """
+    Extracts flight path data from the flight data
+    :return: The path data and goal data
+    """
     path_data = flight_df[['x', 'y', 'z', 'dest_x', 'dest_y', 'dest_z']]
     fp_goals = flight_df[['dest_x', 'dest_y', 'dest_z']]
     fp_goals = fp_goals.groupby(['dest_x', 'dest_y', 'dest_z']).size().reset_index().rename(columns={0: 'count'})
@@ -31,12 +40,20 @@ def getfp():
 
 
 def get_motor_modes():
+    """
+    Read the motor modes from the first entry only.
+    :return: Modes
+    """
     motor_modes = flight_df[['m1_mode', 'm2_mode', 'm3_mode', 'm4_mode']].iloc[0]
 
     return motor_modes
 
 
 def plotfp():
+    """
+    Plots the flight path
+    :return: 3D Plot
+    """
     fpdata = getfp()
     path_data_n = fpdata['pathdata']
     goal_data_n = fpdata['goaldata']
@@ -51,6 +68,10 @@ def plotfp():
 
 
 def plotfptrace():
+    """
+    Plots the positional flight path data as traces
+    :return: Plots
+    """
     fpdata = getfp()
     path_data_n = fpdata['pathdata']
 
@@ -75,16 +96,28 @@ def plotfptrace():
 
 
 def get_timedata():
+    """
+    Handle for sim_clock data
+    :return: Clock data
+    """
     return flight_df[['sim_clock']].to_numpy()[:, 0]
 
 
 def getangles():
+    """
+    Extracts angular data from flight data.
+    :return: Angle data
+    """
     angle_data = flight_df[['theta', 'phi', 'gamma', 'dest_theta', 'dest_phi', 'dest_gamma']]
     angle_data_n = angle_data.to_numpy()
     return angle_data_n
 
 
 def getangleerrors():
+    """
+    Extracts angular errors from flight data.
+    :return: Angular error data
+    """
     angle_data = flight_df[['theta_error', 'phi_error', 'gamma_dot_error', 'theta_error_dot', 'phi_error_dot',
                             'gamma_dot_error_dot']]
     angle_data_n = angle_data.to_numpy()
@@ -92,6 +125,10 @@ def getangleerrors():
 
 
 def plotangles():
+    """
+    Plots the angular data
+    :return: Plots
+    """
     angle_data_n = getangles()
 
     angleplot_fig, angleplot_axs = plt.subplots(3, sharex='all')
@@ -115,6 +152,10 @@ def plotangles():
 
 
 def plotangleerrors():
+    """
+    Plots the angular error data
+    :return: Plots
+    """
     angle_error_data_n = getangleerrors()
 
     angleplot_fig, angleplot_axs = plt.subplots(3, 2, sharex='all')
@@ -148,11 +189,15 @@ def plotangleerrors():
 
 
 def enda():
+    """
+    Close session
+    :return: System exit call
+    """
     print('Analysis Complete. Closing')
     sys.exit()
 
 
-""" Main stuff """
+""" Main stuff to build UI """
 motor_text = Text(root)
 motor_text.insert('end', 'Sim File Loaded\n\n')
 motor_text.insert('end', 'Sim RunTime in File: ')

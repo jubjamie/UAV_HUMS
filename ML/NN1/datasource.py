@@ -1,4 +1,3 @@
-import tensorflow as tf
 import pandas as pd
 import os
 import numpy as np
@@ -7,11 +6,18 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from modelStore.Quadcopter_simulator import motordata
 
-pollingcycles = 30
-timepointwidth = 10
+pollingcycles = 30  # How many times to sample from a flight data file
+timepointwidth = 10  # How many rows are in each sample.
 
 
 def get_motor_status(fdata, classtype='binary', labelas='int'):
+    """
+    Generates labelling data from a segment of flight data.
+    :param fdata: Flight data segment
+    :param classtype: Binary or multiclass.
+    :param labelas: Whether to label as ints or as label string
+    :return: Label
+    """
 
     motor_modes = fdata[['m1_mode', 'm2_mode', 'm3_mode', 'm4_mode']].iloc[0]
     motor_extract = [motor_modes['m1_mode'], motor_modes['m2_mode'], motor_modes['m3_mode'],
@@ -37,13 +43,22 @@ def get_motor_status(fdata, classtype='binary', labelas='int'):
     return motor_status
 
 
-def get_data(asdict=False, newdata=False, classtype='binary', labelas=None, return_class_ref=True):
+def get_data(newdata=False, classtype='binary', labelas=None, return_class_ref=True):
+    """
+    Gets data from a list of directories mydir below and pre-processes.
+    :param newdata: Whether to go through directories and re-sample flight data or load in existing sampled data.
+    :param classtype: Whether this will be used for "binary" or "multiclass" classification.
+    :param labelas: How to label the labels i.e. int or label string.
+    :param return_class_ref: Whether to return a list of classes for the label encoder.
+    :return: Data split into train and test with optional class reference from label encoder.
+    """
+    # Infer suitable lebl modes from classtype
     if labelas is None:
         if classtype == 'multiclass':
             labelas = 'string'
         else:
             labelas = 'int'
-
+    # Directories with flight data. Changes as required.
     mydir = ['../../databin/set2healthy/', '../../databin/set2mf2/', '../../databin/set2rsf1c/',
              '../../databin/set2rsf4/']
     if newdata:
@@ -51,6 +66,7 @@ def get_data(asdict=False, newdata=False, classtype='binary', labelas=None, retu
         data = []
         labels = np.array([])
 
+        # Loop through all csv files and collect the feature columns required. Append to a master array.
         for dirx in mydir:
             print(dirx)
             for file in os.listdir(dirx):
@@ -58,7 +74,8 @@ def get_data(asdict=False, newdata=False, classtype='binary', labelas=None, retu
                     filepath = os.path.join(dirx, file)
                     flight_df = pd.read_csv(filepath, header=0, index_col=None)
                     poll_label = get_motor_status(flight_df, classtype, labelas)
-                    flight_df = flight_df[['theta_error', 'phi_error', 'theta_error_dot', 'phi_error_dot', 'theta_dot', 'phi_dot']]
+                    flight_df = flight_df[['theta_error', 'phi_error', 'theta_error_dot', 'phi_error_dot', 'theta_dot',
+                                           'phi_dot']]
                     flight_df_n = flight_df.to_numpy()
                     timepoints = flight_df_n.shape[0]
                     for j in range(pollingcycles):
@@ -67,15 +84,17 @@ def get_data(asdict=False, newdata=False, classtype='binary', labelas=None, retu
                         data.append(flight_df_n_poll)
                         labels = np.append(labels, poll_label)
 
+        # Format conversions for next steps
         data = np.asarray(data)
         if labelas == 'int':
             labels = labels.astype(int)
         else:
             labels = labels.astype(str)
-        # Save new data
+        # Save new data as numpy object
         np.save(mydir[0] + '_' + classtype + '_data.npy', data)
         np.save(mydir[0] + '_' + classtype + '_labels.npy', labels)
     else:
+        # Load in numpy data from file
         print('Loading data from file...')
         data = np.load(mydir[0] + '_' + classtype + '_data.npy')
         labels = np.load(mydir[0] + '_' + classtype + '_labels.npy')
@@ -92,16 +111,8 @@ def get_data(asdict=False, newdata=False, classtype='binary', labelas=None, retu
     print(labels)
     print(type(labels))
     print(data.shape)
+    # Split data into test and train
     X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.25)
-    if asdict is True:
-        X_train = {'theta_error': X_train[:, 0, :],
-                   'phi_error': X_train[:, 1, :],
-                   'theta_error_dot': X_train[:, 2, :],
-                   'phi_error_dot': X_train[:, 3, :]}
-        X_test = {'theta_error': X_test[:, 0, :],
-                  'phi_error': X_test[:, 1, :],
-                  'theta_error_dot': X_test[:, 2, :],
-                  'phi_error_dot': X_test[:, 3, :]}
 
     if return_class_ref:
         return X_train, y_train, X_test, y_test, classref
@@ -110,38 +121,14 @@ def get_data(asdict=False, newdata=False, classtype='binary', labelas=None, retu
 
 
 def lstm_transpose(xt1, yt1, xt2, yt2):
+    """
+    Transposes the data into the format for LSTM training
+    :param xt1: x train data - Auto feeds if wrapping get_data()
+    :param yt1: y train data - Auto feeds if wrapping get_data()
+    :param xt2: x test data - Auto feeds if wrapping get_data()
+    :param yt2: y test data - Auto feeds if wrapping get_data()
+    :return:
+    """
     xt1 = np.transpose(xt1, (0, 2, 1))
     xt2 = np.transpose(xt2, (0, 2, 1))
     return xt1, yt1, xt2, yt2
-
-
-def train_input_fn(features, labels, batch_size=100):
-    """An input function for training"""
-    # Convert the inputs to a Dataset.
-    dataset = tf.data.Dataset.from_tensor_slices((features, labels))
-
-    # Shuffle, repeat, and batch the examples.
-    # dataset = dataset.shuffle(1000).repeat().batch(batch_size)
-
-    # Return the dataset.
-    return dataset
-
-
-def eval_input_fn(features, labels, batch_size):
-    """An input function for evaluation or prediction"""
-
-    if labels is None:
-        # No labels, use only features.
-        inputs = features
-    else:
-        inputs = (features, labels)
-
-    # Convert the inputs to a Dataset.
-    dataset = tf.data.Dataset.from_tensor_slices(inputs)
-
-    # Batch the examples
-    assert batch_size is not None, "batch_size must not be None"
-    dataset = dataset.batch(batch_size)
-
-    # Return the dataset.
-    return dataset

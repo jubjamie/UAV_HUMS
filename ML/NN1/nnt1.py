@@ -1,16 +1,15 @@
 import tensorflow as tf
 from tensorflow import keras
 import datasource
-import time
 from sklearn.metrics import confusion_matrix
 import numpy as np
 import matplotlib.pyplot as plt
 
-ts = time.gmtime()
 
 # get bulk data
 X_train, y_train, X_test, y_test, enc_classes = datasource.get_data(newdata=False)
 
+# Build model using Keras Layers
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(6, datasource.timepointwidth)),
     keras.layers.Dense(64, activation=tf.nn.relu, use_bias=True),
@@ -24,7 +23,7 @@ model = keras.Sequential([
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-#tb
+# tb
 tb_cb = tf.keras.callbacks.TensorBoard(log_dir='./logs', write_graph=True, update_freq='epoch')
 
 history = model.fit(X_train, y_train, batch_size=16, epochs=16, shuffle=True, validation_split=0.15)
@@ -51,6 +50,7 @@ predictions = model.predict(X_test)
 
 print('Predicts: ' + str(predictions[0]) + ' <-> Is actually: ' + str(y_test[0]))
 
+# Plot confusion matrix
 cm = confusion_matrix(y_test, np.argmax(predictions, axis=1))
 cm_raw = cm
 cm = np.true_divide(cm, cm.sum(axis=1, keepdims=True))

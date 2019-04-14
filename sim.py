@@ -8,7 +8,14 @@ import numpy as np
 
 
 class Sim:
+    """
+    Define main API class for hooking into the simulation. Feature extension should be configurable from here at a
+    minimum.
+    """
     def __init__(self):
+        """
+        Set basic starting values. Can be later adjsuted by user.
+        """
         self.GOALS = [(0, 0, 3), (2, -2, 4), (-1.5, 1.5, 1)]
         self.goal_time = 5
         self.YAWS = [0, 3.14, -1.54, 1.54]
@@ -58,6 +65,12 @@ class Sim:
         self.GOALS = goals
 
     def set_failure_mode(self, setting='defined', mode='healthy'):
+        """
+        Generate a random failure configuration or sets as input by mode.
+        :param setting: Whether to be random or defined
+        :param mode: List of length 4 with the motor codes.
+        :return: Set failure modes in simulation.
+        """
         if setting == 'random':
             self.motor_modes = [random.choices(uav_lookup.modelist, weights=[70, 6, 6, 6, 6, 6])[0],
                                 random.choices(uav_lookup.modelist, weights=[70, 6, 6, 6, 6, 6])[0],
@@ -94,6 +107,10 @@ class Sim:
         self.save_path = path
 
     def run_sim(self):
+        """
+        Run final checks on parameters before setting off simulation.
+        :return:
+        """
         # Parse gui visibility logic
         if self.see_gui is True and self.see_motor_gui is True:
             self.gui_mode = 2

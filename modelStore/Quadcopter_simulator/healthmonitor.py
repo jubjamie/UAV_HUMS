@@ -9,6 +9,14 @@ from scipy.stats import mode
 
 class HealthMonitor:
     def __init__(self, controller, datafeed, use_lstm=False, displaybool=True, classmode='binary'):
+        """
+        Initialise the hleathmonitor
+        :param controller: Hook into controller thread
+        :param datafeed: Hook into the datafeed
+        :param use_lstm: Whether to use the LSTM model
+        :param displaybool: Where to display the graph (BROKEN)
+        :param classmode: Whether to expect binary or multiclass classification
+        """
         self.thread_object = None
         self.thread_object_scope = None
         self.run = True
@@ -43,6 +51,10 @@ class HealthMonitor:
         self.timepoint_average = 5
 
     def checkhealth(self):
+        """
+        Fetch data and pass through network. Log and determine classification using sliding window.
+        :return: None
+        """
         x_data, self.sim_time = self.datafeed()
         x_input = x_data.T
         x_input = np.expand_dims(x_input, axis=0)
@@ -83,9 +95,17 @@ class HealthMonitor:
         #self.health_axs.plot(self.sim_clock_data, self.health_data)
 
     def hook_data(self):
+        """
+        Hook into the classifications
+        :return: Simtime and classfiication data
+        """
         return self.sim_time, self.health_data
 
     def load_model(self):
+        """
+        Load the network model in and set up for inference.
+        :return: Model init
+        """
         with tf.device('/cpu:0'):
             if self.use_lstm:
                 self.model = tf.keras.models.load_model('ML/LSTM1/models/lstm_class_10_3x32.h5')
@@ -96,6 +116,10 @@ class HealthMonitor:
             self.model.summary()
 
     def thread_run(self):
+        """
+        Main function to loop through inference
+        :return: None
+        """
         print('Health Monitor Starting...')
         self.load_model()
         time.sleep(0.4)
@@ -107,6 +131,10 @@ class HealthMonitor:
             self.checkhealth()
 
     def scope_plotter(self):
+        """
+        BROKEN - Plots the health data in real time.
+        :return:
+        """
         #print('Updating graph')
         self.health_axs.clear()
         self.health_axs.plot(self.sim_clock_data[:self.health_data.shape[0]], self.health_data)
